@@ -89,13 +89,29 @@ class MainWindow(QMainWindow):
         self.reports_btn.clicked.connect(self.show_reports)
         self.settings_btn.clicked.connect(self.show_settings)
 
+        # Initialize screens
+        self._init_screens()
+
+    def _init_screens(self):
+        """Initialize all screens"""
+        from ui.screens.purchase_entry import PurchaseEntryScreen
+        from ui.screens.purchase_list import PurchaseListScreen
+
+        # Create screens
+        self.purchase_entry_screen = PurchaseEntryScreen()
+        self.purchase_list_screen = PurchaseListScreen()
+
+        # Add to stacked widget
+        self.stacked_widget.addWidget(self.purchase_entry_screen)
+        self.stacked_widget.addWidget(self.purchase_list_screen)
+
     def show_dashboard(self):
         """Show dashboard screen"""
         QMessageBox.information(self, "Info", "Dashboard screen not yet implemented")
 
     def show_purchase(self):
-        """Show purchase entry screen"""
-        QMessageBox.information(self, "Info", "Purchase entry screen not yet implemented")
+        """Show purchase list screen"""
+        self.stacked_widget.setCurrentWidget(self.purchase_list_screen)
 
     def show_delivery(self):
         """Show delivery invoice screen"""
