@@ -3,10 +3,14 @@ Application Settings
 Loads configuration from environment variables
 """
 import os
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Try to load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # dotenv is optional - works fine without it if .env vars are already set
+    pass
 
 
 class DatabaseConfig:

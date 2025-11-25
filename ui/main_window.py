@@ -15,16 +15,17 @@ from config.database import get_db
 class MainWindow(QMainWindow):
     """Main application window"""
 
-    def __init__(self):
+    def __init__(self, demo_mode=False):
         super().__init__()
         self.setWindowTitle("Rice Billing System - AYOP BIN ARSHAD")
         self.setGeometry(100, 100, 1200, 800)
+        self.demo_mode = demo_mode
 
         # Apply stylesheet
         self.setStyleSheet(STYLESHEET)
 
-        # Database session
-        self.db = get_db()
+        # Database session (None in demo mode)
+        self.db = None if demo_mode else get_db()
 
         # Create central widget
         central_widget = QWidget()
