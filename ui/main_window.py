@@ -95,30 +95,45 @@ class MainWindow(QMainWindow):
 
     def _init_screens(self):
         """Initialize all screens"""
-        from ui.screens.purchase_entry import PurchaseEntryScreen
-        from ui.screens.purchase_list import PurchaseListScreen
-        from ui.screens.delivery_entry import DeliveryEntryScreen
-        from ui.screens.delivery_list import DeliveryListScreen
         from ui.screens.dashboard import DashboardScreen
-        from ui.screens.reports import ReportsScreen
-        from ui.screens.master_data import (
-            FarmerManagementScreen,
-            RiceMillManagementScreen,
-            TruckManagementScreen
-        )
-        from ui.screens.settings import SettingsScreen
 
-        # Create screens
-        self.dashboard_screen = DashboardScreen()
-        self.purchase_entry_screen = PurchaseEntryScreen()
-        self.purchase_list_screen = PurchaseListScreen()
-        self.delivery_entry_screen = DeliveryEntryScreen()
-        self.delivery_list_screen = DeliveryListScreen()
-        self.farmer_management_screen = FarmerManagementScreen()
-        self.mill_management_screen = RiceMillManagementScreen()
-        self.truck_management_screen = TruckManagementScreen()
-        self.reports_screen = ReportsScreen()
-        self.settings_screen = SettingsScreen()
+        # Create dashboard screen
+        self.dashboard_screen = DashboardScreen(demo_mode=self.demo_mode)
+
+        # Only create other screens if not in demo mode
+        if not self.demo_mode:
+            from ui.screens.purchase_entry import PurchaseEntryScreen
+            from ui.screens.purchase_list import PurchaseListScreen
+            from ui.screens.delivery_entry import DeliveryEntryScreen
+            from ui.screens.delivery_list import DeliveryListScreen
+            from ui.screens.reports import ReportsScreen
+            from ui.screens.master_data import (
+                FarmerManagementScreen,
+                RiceMillManagementScreen,
+                TruckManagementScreen
+            )
+            from ui.screens.settings import SettingsScreen
+
+            self.purchase_entry_screen = PurchaseEntryScreen()
+            self.purchase_list_screen = PurchaseListScreen()
+            self.delivery_entry_screen = DeliveryEntryScreen()
+            self.delivery_list_screen = DeliveryListScreen()
+            self.farmer_management_screen = FarmerManagementScreen()
+            self.mill_management_screen = RiceMillManagementScreen()
+            self.truck_management_screen = TruckManagementScreen()
+            self.reports_screen = ReportsScreen()
+            self.settings_screen = SettingsScreen()
+        else:
+            # Create placeholder screens for demo mode
+            self.purchase_entry_screen = QWidget()
+            self.purchase_list_screen = QWidget()
+            self.delivery_entry_screen = QWidget()
+            self.delivery_list_screen = QWidget()
+            self.farmer_management_screen = QWidget()
+            self.mill_management_screen = QWidget()
+            self.truck_management_screen = QWidget()
+            self.reports_screen = QWidget()
+            self.settings_screen = QWidget()
 
         # Add to stacked widget
         self.stacked_widget.addWidget(self.dashboard_screen)

@@ -24,11 +24,13 @@ class DashboardScreen(QWidget):
     go_to_farmers = pyqtSignal()
     go_to_reports = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, demo_mode=False):
         super().__init__(parent)
-        self.db = get_db()
+        self.demo_mode = demo_mode
+        self.db = None if demo_mode else get_db()
         self.setup_ui()
-        self.load_statistics()
+        if not demo_mode:
+            self.load_statistics()
 
     def setup_ui(self):
         """Setup user interface"""
@@ -60,9 +62,28 @@ class DashboardScreen(QWidget):
         layout = QGridLayout()
 
         # Get statistics
-        purchase_stats = PurchaseService.get_statistics(self.db)
-        delivery_stats = DeliveryService.get_statistics(self.db)
-        farmer_count = FarmerService.count(self.db)
+        if self.demo_mode:
+            # Demo data
+            purchase_stats = {
+                'total_bills': 45,
+                'pending_bills': 12,
+                'delivered_bills': 33,
+                'total_weight': 5250,
+                'delivered_weight': 4200,
+                'total_payment': 78750.00,
+                'delivered_payment': 63000.00
+            }
+            delivery_stats = {
+                'total_invoices': 8,
+                'total_bills_delivered': 33,
+                'total_weight': 5250,
+                'avg_invoice_weight': 656
+            }
+            farmer_count = 15
+        else:
+            purchase_stats = PurchaseService.get_statistics(self.db)
+            delivery_stats = DeliveryService.get_statistics(self.db)
+            farmer_count = FarmerService.count(self.db)
 
         # Column 1: Purchase Stats
         layout.addWidget(QLabel("PURCHASE BILLS"), 0, 0)
@@ -145,26 +166,36 @@ class DashboardScreen(QWidget):
         layout = QGridLayout()
 
         # Get today's data
-        today = datetime.now().date()
-        today_start = datetime.combine(today, datetime.min.time())
-        today_end = datetime.combine(today, datetime.max.time())
+        if self.demo_mode:
+            # Demo data
+            today_bills_count = 3
+            today_invoices_count = 1
+            today_weight = 450
+            today_payment = 6750.00
+            today_delivered_weight = 380
+        else:
+            today = datetime.now().date()
+            today_start = datetime.combine(today, datetime.min.time())
+            today_end = datetime.combine(today, datetime.max.time())
 
-        today_bills = PurchaseService.get_by_date_range(self.db, today_start, today_end)
-        today_invoices = DeliveryService.get_by_date_range(self.db, today_start, today_end)
+            today_bills = PurchaseService.get_by_date_range(self.db, today_start, today_end)
+            today_invoices = DeliveryService.get_by_date_range(self.db, today_start, today_end)
 
-        today_weight = sum(float(b.net_weight) for b in today_bills)
-        today_payment = sum(float(b.total_payment) for b in today_bills)
-        today_delivered_weight = sum(float(i.total_weight) for i in today_invoices)
+            today_bills_count = len(today_bills)
+            today_invoices_count = len(today_invoices)
+            today_weight = sum(float(b.net_weight) for b in today_bills)
+            today_payment = sum(float(b.total_payment) for b in today_bills)
+            today_delivered_weight = sum(float(i.total_weight) for i in today_invoices)
 
         # Activity cards
         layout.addWidget(self._create_stat_card(
             "New Bills",
-            str(len(today_bills)),
+            str(today_bills_count),
             "#007ACC"
         ), 0, 0)
         layout.addWidget(self._create_stat_card(
             "New Deliveries",
-            str(len(today_invoices)),
+            str(today_invoices_count),
             "#28a745"
         ), 0, 1)
         layout.addWidget(self._create_stat_card(
@@ -183,7 +214,7 @@ class DashboardScreen(QWidget):
             "#6f42c1"
         ), 0, 4)
 
-        layout.addStretch(1, 5)
+        layout.setColumnStretch(5, 1)
         group.setLayout(layout)
         return group
 
