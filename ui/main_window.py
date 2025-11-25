@@ -96,14 +96,20 @@ class MainWindow(QMainWindow):
         """Initialize all screens"""
         from ui.screens.purchase_entry import PurchaseEntryScreen
         from ui.screens.purchase_list import PurchaseListScreen
+        from ui.screens.delivery_entry import DeliveryEntryScreen
+        from ui.screens.delivery_list import DeliveryListScreen
 
         # Create screens
         self.purchase_entry_screen = PurchaseEntryScreen()
         self.purchase_list_screen = PurchaseListScreen()
+        self.delivery_entry_screen = DeliveryEntryScreen()
+        self.delivery_list_screen = DeliveryListScreen()
 
         # Add to stacked widget
         self.stacked_widget.addWidget(self.purchase_entry_screen)
         self.stacked_widget.addWidget(self.purchase_list_screen)
+        self.stacked_widget.addWidget(self.delivery_entry_screen)
+        self.stacked_widget.addWidget(self.delivery_list_screen)
 
     def show_dashboard(self):
         """Show dashboard screen"""
@@ -114,8 +120,8 @@ class MainWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.purchase_list_screen)
 
     def show_delivery(self):
-        """Show delivery invoice screen"""
-        QMessageBox.information(self, "Info", "Delivery invoice screen not yet implemented")
+        """Show delivery invoice list screen"""
+        self.stacked_widget.setCurrentWidget(self.delivery_list_screen)
 
     def show_farmers(self):
         """Show farmer management screen"""
