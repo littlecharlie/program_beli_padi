@@ -147,6 +147,12 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.reports_screen)
         self.stacked_widget.addWidget(self.settings_screen)
 
+        # Connect dashboard quick action signals
+        self.dashboard_screen.go_to_purchase.connect(self.show_purchase)
+        self.dashboard_screen.go_to_delivery.connect(self.show_delivery)
+        self.dashboard_screen.go_to_farmers.connect(self.show_farmers)
+        self.dashboard_screen.go_to_reports.connect(self.show_reports)
+
     def show_dashboard(self):
         """Show dashboard screen"""
         self.stacked_widget.setCurrentWidget(self.dashboard_screen)

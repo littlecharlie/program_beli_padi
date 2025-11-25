@@ -4,7 +4,11 @@ Main application entry point
 """
 import sys
 import os
+from dotenv import load_dotenv
 from PyQt6.QtWidgets import QApplication, QMessageBox
+
+# Load environment variables
+load_dotenv()
 
 # Check if running in demo mode
 DEMO_MODE = os.getenv('DEMO_MODE', 'false').lower() == 'true'
