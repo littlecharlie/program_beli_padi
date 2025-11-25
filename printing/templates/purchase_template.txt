@@ -1,0 +1,45 @@
+================================================================================
+                            {company_name}
+       {company_address_1}
+                        {company_address_2}
+
+NO LESEN: {company_registration}                              NO. TELEFON: {company_phone}
+================================================================================
+
+                        BIL BELIAN : {bill_number}
+
+NAMA PETANI  : {farmer_name}               TARIKH: {bill_date}
+ALAMAT       : {farmer_address}
+
+NO DAFTAR PESAWAH: {farmer_registration}
+NO KAD SUBSIDI   : {farmer_subsidy_code}
+NO KAD PENGENALAN: {farmer_ic}                 NO LORI: {truck_number}
+NO AKAUN BANK    : {farmer_bank_account}                            NO RESIT TIMBANG: {weighbridge_receipt}
+
+--------------------------------------------------------------------------------
+Wap Basah: {discount_wap_basah}         Hampa Padi: {discount_hampa_padi}        Padi Muda/Rosak: {discount_padi_muda}      = {total_discount_percent}%
+--------------------------------------------------------------------------------
+
+BERAT TIMBANGAN (KG)         : {gross_weight}
+(-) POTONGAN                 : {discount_weight}
+BERAT BERSIH (KG)            : {net_weight}
+HARGA (1000KG)               : RM {rice_price_per_1000kg}
+NILAI PADI                   : RM {total_payment}
+
+Anggaran Subsidi             : RM {subsidy_estimate}
+
+KAWASAN TUAIAN               : {harvest_area}
+JUMLAH BAYARAN               : RM {total_payment}
+
+================================================================================
+DISEDIAKAN OLEH                              T. TANGAN PENERIMA
+
+
+
+
+________________________________________________________________________________
+SUBSIDI PADI
+                            BIL BELIAN PADI
+                         {company_name}
+         {company_address_1}
+================================================================================

@@ -1,0 +1,27 @@
+================================================================================
+                         INVOIS HANTARAN                    No : {invoice_number}
+
+                         {company_name}
+         {company_address_1}
+                        {company_address_2}.
+
+No Lesen     : {company_registration}                        Tarikh : {invoice_date}
+No Telefon   : {company_phone}
+
+NO LORI      : {truck_number}
+BERAT LORI   : {tare_weight}
+
+================================================================================
+
+KEPADA:
+            {mill_name}
+
+                                              BERAT PADI    {total_weight}
+
+--------------------------------------------------------------------------------
+NO BIL  NAMA PESAWAH                      BERAT PADI  NO LORI   NAMA KILANG
+--------------------------------------------------------------------------------
+{bill_items}
+--------------------------------------------------------------------------------
+                                    JUMLAH:   {total_weight} kg
+================================================================================
