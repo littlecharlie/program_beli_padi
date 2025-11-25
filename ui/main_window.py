@@ -98,22 +98,42 @@ class MainWindow(QMainWindow):
         from ui.screens.purchase_list import PurchaseListScreen
         from ui.screens.delivery_entry import DeliveryEntryScreen
         from ui.screens.delivery_list import DeliveryListScreen
+        from ui.screens.dashboard import DashboardScreen
+        from ui.screens.reports import ReportsScreen
+        from ui.screens.master_data import (
+            FarmerManagementScreen,
+            RiceMillManagementScreen,
+            TruckManagementScreen
+        )
+        from ui.screens.settings import SettingsScreen
 
         # Create screens
+        self.dashboard_screen = DashboardScreen()
         self.purchase_entry_screen = PurchaseEntryScreen()
         self.purchase_list_screen = PurchaseListScreen()
         self.delivery_entry_screen = DeliveryEntryScreen()
         self.delivery_list_screen = DeliveryListScreen()
+        self.farmer_management_screen = FarmerManagementScreen()
+        self.mill_management_screen = RiceMillManagementScreen()
+        self.truck_management_screen = TruckManagementScreen()
+        self.reports_screen = ReportsScreen()
+        self.settings_screen = SettingsScreen()
 
         # Add to stacked widget
+        self.stacked_widget.addWidget(self.dashboard_screen)
         self.stacked_widget.addWidget(self.purchase_entry_screen)
         self.stacked_widget.addWidget(self.purchase_list_screen)
         self.stacked_widget.addWidget(self.delivery_entry_screen)
         self.stacked_widget.addWidget(self.delivery_list_screen)
+        self.stacked_widget.addWidget(self.farmer_management_screen)
+        self.stacked_widget.addWidget(self.mill_management_screen)
+        self.stacked_widget.addWidget(self.truck_management_screen)
+        self.stacked_widget.addWidget(self.reports_screen)
+        self.stacked_widget.addWidget(self.settings_screen)
 
     def show_dashboard(self):
         """Show dashboard screen"""
-        QMessageBox.information(self, "Info", "Dashboard screen not yet implemented")
+        self.stacked_widget.setCurrentWidget(self.dashboard_screen)
 
     def show_purchase(self):
         """Show purchase list screen"""
@@ -125,23 +145,23 @@ class MainWindow(QMainWindow):
 
     def show_farmers(self):
         """Show farmer management screen"""
-        QMessageBox.information(self, "Info", "Farmer management screen not yet implemented")
+        self.stacked_widget.setCurrentWidget(self.farmer_management_screen)
 
     def show_mills(self):
         """Show rice mill management screen"""
-        QMessageBox.information(self, "Info", "Rice mill management screen not yet implemented")
+        self.stacked_widget.setCurrentWidget(self.mill_management_screen)
 
     def show_trucks(self):
         """Show truck management screen"""
-        QMessageBox.information(self, "Info", "Truck management screen not yet implemented")
+        self.stacked_widget.setCurrentWidget(self.truck_management_screen)
 
     def show_reports(self):
         """Show reports screen"""
-        QMessageBox.information(self, "Info", "Reports screen not yet implemented")
+        self.stacked_widget.setCurrentWidget(self.reports_screen)
 
     def show_settings(self):
         """Show settings screen"""
-        QMessageBox.information(self, "Info", "Settings screen not yet implemented")
+        self.stacked_widget.setCurrentWidget(self.settings_screen)
 
     def closeEvent(self, event):
         """Close database connection on exit"""
