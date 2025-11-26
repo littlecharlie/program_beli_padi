@@ -26,5 +26,9 @@ class DeliveryInvoice(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     created_by = Column(String(100))
 
+    # Relationships
+    mill = relationship("RiceMill", backref="delivery_invoices", lazy='joined')
+    truck = relationship("Truck", backref="delivery_invoices", lazy='joined')
+
     def __repr__(self):
         return f"<DeliveryInvoice(number='{self.invoice_number}', total_weight={self.total_weight})>"

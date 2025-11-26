@@ -49,5 +49,11 @@ class PurchaseBill(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     created_by = Column(String(100))
 
+    # Relationships
+    farmer = relationship("Farmer", backref="purchase_bills", lazy='joined')
+    truck = relationship("Truck", backref="purchase_bills", lazy='joined')
+    harvest_area = relationship("HarvestArea", backref="purchase_bills", lazy='joined')
+    delivery_invoice = relationship("DeliveryInvoice", backref="purchase_bills", foreign_keys=[delivery_invoice_id], lazy='joined')
+
     def __repr__(self):
         return f"<PurchaseBill(number='{self.bill_number}', net_weight={self.net_weight})>"
