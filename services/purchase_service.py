@@ -3,7 +3,7 @@ Purchase Service
 CRUD operations and business logic for purchase bills
 """
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, and_
+from sqlalchemy import desc, and_, text
 from datetime import datetime
 from decimal import Decimal
 from models.purchase_bill import PurchaseBill
@@ -48,9 +48,15 @@ class PurchaseService:
             Created PurchaseBill object
         """
         # Get next bill number from database function
-        bill_number = db.execute(
-            "SELECT get_next_bill_number()"
-        ).scalar()
+        try:
+            bill_number = db.execute(
+                text("SELECT get_next_bill_number()::text")
+            ).scalar()
+
+            if not bill_number:
+                raise ValueError("Failed to generate bill number from database")
+        except Exception as e:
+            raise RuntimeError(f"Error getting next bill number: {str(e)}")
 
         # Calculate all values
         calcs = CalculationService.calculate_purchase_bill(

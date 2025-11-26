@@ -3,7 +3,7 @@ Delivery Service
 CRUD operations for delivery invoices and items
 """
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, and_
+from sqlalchemy import desc, and_, text
 from datetime import datetime
 from decimal import Decimal
 from models.delivery_invoice import DeliveryInvoice
@@ -55,9 +55,15 @@ class DeliveryService:
         total_weight = CalculationService.calculate_delivery_total_weight(bills)
 
         # Get next invoice number from database function
-        invoice_number = db.execute(
-            "SELECT get_next_invoice_number()"
-        ).scalar()
+        try:
+            invoice_number = db.execute(
+                text("SELECT get_next_invoice_number()::text")
+            ).scalar()
+
+            if not invoice_number:
+                raise ValueError("Failed to generate invoice number from database")
+        except Exception as e:
+            raise RuntimeError(f"Error getting next invoice number: {str(e)}")
 
         # Create delivery invoice
         delivery_invoice = DeliveryInvoice(
