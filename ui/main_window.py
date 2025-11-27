@@ -2,12 +2,12 @@
 Main Application Window
 PyQt6 main window for the Rice Billing System
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QStackedWidget, QMessageBox
+    QPushButton, QLabel, QStackedWidget, QMessageBox, QApplication
 )
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 from ui.styles import STYLESHEET
 from config.database import get_db
 
@@ -18,7 +18,10 @@ class MainWindow(QMainWindow):
     def __init__(self, demo_mode=False):
         super().__init__()
         self.setWindowTitle("Rice Billing System - AYOP BIN ARSHAD")
-        self.setGeometry(100, 100, 1200, 800)
+
+        # Set responsive window size based on screen resolution
+        self._set_responsive_window_size()
+
         self.demo_mode = demo_mode
 
         # Apply stylesheet
@@ -79,11 +82,64 @@ class MainWindow(QMainWindow):
         # Connect button signals (to be implemented)
         self.setup_connections()
 
+    def _set_responsive_window_size(self):
+        """
+        Set window size responsively based on screen resolution.
+        Default target: 1280x720
+        """
+        # Get the primary screen
+        screen = QApplication.primaryScreen()
+        if screen:
+            screen_geometry = screen.availableGeometry()
+            screen_width = screen_geometry.width()
+            screen_height = screen_geometry.height()
+
+            # Desired window dimensions
+            window_width = 1280
+            window_height = 720
+
+            # Calculate if we need to scale down for smaller screens
+            # Leave some margin (90% of screen size max)
+            max_width = int(screen_width * 0.9)
+            max_height = int(screen_height * 0.9)
+
+            # Scale down if necessary while maintaining aspect ratio
+            if window_width > max_width or window_height > max_height:
+                # Calculate scale factor to fit within screen
+                scale_width = max_width / window_width
+                scale_height = max_height / window_height
+                scale_factor = min(scale_width, scale_height)
+
+                window_width = int(window_width * scale_factor)
+                window_height = int(window_height * scale_factor)
+
+            # Center the window on screen
+            x = (screen_width - window_width) // 2
+            y = (screen_height - window_height) // 2
+
+            # Set geometry (x, y, width, height)
+            self.setGeometry(x, y, window_width, window_height)
+
+            # Set minimum size to ensure usability (minimum 800x600)
+            self.setMinimumSize(800, 600)
+
+            # Make window resizable
+            # Users can resize as needed, or maximize
+            # Note: Window is resizable by default in PyQt5
+
+            # Optional: Maximize window on very small screens (< 1366x768)
+            if screen_width < 1366 or screen_height < 768:
+                self.showMaximized()
+        else:
+            # Fallback if screen detection fails
+            self.setGeometry(100, 100, 1280, 720)
+            self.setMinimumSize(800, 600)
+
     def setup_connections(self):
         """Setup button signal connections"""
         self.dashboard_btn.clicked.connect(self.show_dashboard)
-        self.purchase_btn.clicked.connect(self.show_purchase)
-        self.delivery_btn.clicked.connect(self.show_delivery)
+        self.purchase_btn.clicked.connect(self.show_purchase_list)
+        self.delivery_btn.clicked.connect(self.show_delivery_list)
         self.farmers_btn.clicked.connect(self.show_farmers)
         self.mills_btn.clicked.connect(self.show_mills)
         self.trucks_btn.clicked.connect(self.show_trucks)
@@ -148,22 +204,85 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.settings_screen)
 
         # Connect dashboard quick action signals
-        self.dashboard_screen.go_to_purchase.connect(self.show_purchase)
-        self.dashboard_screen.go_to_delivery.connect(self.show_delivery)
+        self.dashboard_screen.go_to_purchase.connect(self.show_purchase_entry)
+        self.dashboard_screen.go_to_delivery.connect(self.show_delivery_entry)
         self.dashboard_screen.go_to_farmers.connect(self.show_farmers)
         self.dashboard_screen.go_to_reports.connect(self.show_reports)
+
+        # Connect list screen signals to entry screens (if not demo mode)
+        if not self.demo_mode:
+            # Purchase list screen connections
+            self.purchase_list_screen.create_purchase_bill.connect(self.show_purchase_entry)
+
+            # Delivery list screen connections
+            self.delivery_list_screen.create_delivery_invoice.connect(self.show_delivery_entry)
+
+            # Entry screen connections - when saved/created, return to list and refresh
+            self.purchase_entry_screen.bill_saved.connect(self._on_purchase_bill_saved)
+            self.delivery_entry_screen.invoice_created.connect(self._on_delivery_invoice_created)
+
+    def _on_purchase_bill_saved(self, bill_id: int):
+        """Handle purchase bill saved - return to list and refresh"""
+        # Refresh the list
+        if hasattr(self.purchase_list_screen, 'refresh'):
+            self.purchase_list_screen.refresh()
+        # Show the list screen
+        self.show_purchase_list()
+        # Optionally show success message
+        QMessageBox.information(
+            self,
+            "Success",
+            f"Purchase bill saved successfully! (ID: {bill_id})"
+        )
+
+    def _on_delivery_invoice_created(self, invoice_id: int):
+        """Handle delivery invoice created - return to list and refresh"""
+        # Refresh the list
+        if hasattr(self.delivery_list_screen, 'refresh'):
+            self.delivery_list_screen.refresh()
+        # Show the list screen
+        self.show_delivery_list()
+        # Optionally show success message
+        QMessageBox.information(
+            self,
+            "Success",
+            f"Delivery invoice created successfully! (ID: {invoice_id})"
+        )
 
     def show_dashboard(self):
         """Show dashboard screen"""
         self.stacked_widget.setCurrentWidget(self.dashboard_screen)
+        # Refresh dashboard statistics
+        if hasattr(self.dashboard_screen, 'refresh'):
+            self.dashboard_screen.refresh()
 
-    def show_purchase(self):
+    def show_purchase_list(self):
         """Show purchase list screen"""
         self.stacked_widget.setCurrentWidget(self.purchase_list_screen)
+        # Refresh the list when showing
+        if hasattr(self.purchase_list_screen, 'refresh'):
+            self.purchase_list_screen.refresh()
 
-    def show_delivery(self):
+    def show_purchase_entry(self):
+        """Show purchase entry screen"""
+        self.stacked_widget.setCurrentWidget(self.purchase_entry_screen)
+        # Reset the form for new entry
+        if hasattr(self.purchase_entry_screen, 'reset_form'):
+            self.purchase_entry_screen.reset_form()
+
+    def show_delivery_list(self):
         """Show delivery invoice list screen"""
         self.stacked_widget.setCurrentWidget(self.delivery_list_screen)
+        # Refresh the list when showing
+        if hasattr(self.delivery_list_screen, 'refresh'):
+            self.delivery_list_screen.refresh()
+
+    def show_delivery_entry(self):
+        """Show delivery entry screen"""
+        self.stacked_widget.setCurrentWidget(self.delivery_entry_screen)
+        # Reset the form for new entry
+        if hasattr(self.delivery_entry_screen, 'reset_form'):
+            self.delivery_entry_screen.reset_form()
 
     def show_farmers(self):
         """Show farmer management screen"""
