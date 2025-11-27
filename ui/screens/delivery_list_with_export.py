@@ -2,12 +2,12 @@
 Delivery Invoice List Screen with PDF Export Integration
 Enhanced version with PDF export capabilities
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
-    QDateEdit, QComboBox
+    QDateEdit, QComboBox, QAbstractItemView
 )
-from PyQt6.QtCore import Qt, QDate, pyqtSignal
+from PyQt5.QtCore import Qt, QDate, pyqtSignal
 from datetime import datetime
 from config.database import get_db
 from services.delivery_service import DeliveryService
@@ -91,6 +91,10 @@ class DeliveryListScreenWithExport(QWidget, TableContextMenuMixin):
         self.invoices_table.setColumnWidth(4, 70)
         self.invoices_table.setColumnWidth(5, 120)
         self.invoices_table.setColumnWidth(6, 100)
+        # Disable cell editing - users must use the Edit button
+        self.invoices_table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
+        )
 
         # Setup context menu
         self.setup_table_context_menu(self.invoices_table, export_enabled=True)
@@ -347,10 +351,10 @@ class DeliveryListScreenWithExport(QWidget, TableContextMenuMixin):
             self, "Confirm Delete",
             f"Are you sure you want to delete invoice {invoice.invoice_number}?\n"
             f"Associated bills will be marked as undelivered.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             if DeliveryService.delete(self.db, invoice_id):
                 QMessageBox.information(self, "Success", "Invoice deleted successfully")
                 self.load_invoices()

@@ -2,12 +2,12 @@
 Purchase Bill List Screen with PDF Export Integration
 Enhanced version with PDF export capabilities
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
-    QDateEdit, QComboBox, QSpinBox, QToolBar
+    QDateEdit, QComboBox, QSpinBox, QToolBar, QAbstractItemView
 )
-from PyQt6.QtCore import Qt, QDate, pyqtSignal
+from PyQt5.QtCore import Qt, QDate, pyqtSignal
 from datetime import datetime, timedelta
 from config.database import get_db
 from services.purchase_service import PurchaseService
@@ -89,6 +89,11 @@ class PurchaseListScreenWithExport(QWidget, TableContextMenuMixin):
         self.bills_table.setColumnWidth(6, 100)
         self.bills_table.setColumnWidth(7, 100)
         self.bills_table.setColumnWidth(8, 100)
+
+        # Disable cell editing - users must use the Edit button
+        self.bills_table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
+        )
 
         # Setup context menu from mixin
         self.setup_table_context_menu(self.bills_table, export_enabled=True)
@@ -366,10 +371,10 @@ class PurchaseListScreenWithExport(QWidget, TableContextMenuMixin):
         reply = QMessageBox.question(
             self, "Confirm Delete",
             f"Are you sure you want to delete bill {bill.bill_number}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             if PurchaseService.delete(self.db, bill_id):
                 QMessageBox.information(self, "Success", "Bill deleted successfully")
                 self.load_bills()
@@ -481,7 +486,7 @@ class PurchaseListScreenWithExport(QWidget, TableContextMenuMixin):
                 # TODO: Generate PDF for each bill
                 # In real implementation, append to single PDF
 
-                if progress.result() == QMessageBox.StandardButton.Cancel:
+                if progress.result() == QMessageBox.Cancel:
                     ExportNotification.show_info(self, "Export Cancelled", "Export was cancelled by user")
                     return
 

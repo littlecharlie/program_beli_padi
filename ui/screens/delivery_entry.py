@@ -2,13 +2,14 @@
 Delivery Invoice Entry Screen
 UI for creating delivery invoices from purchase bills
 """
-from PyQt6.QtWidgets import (
+from typing import Tuple
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel,
     QLineEdit, QPushButton, QMessageBox, QTableWidget,
     QTableWidgetItem, QFormLayout, QScrollArea, QCheckBox,
-    QComboBox, QHeaderView
+    QComboBox, QHeaderView, QAbstractItemView
 )
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from datetime import datetime
 from decimal import Decimal
 from config.database import get_db
@@ -147,7 +148,11 @@ class DeliveryEntryScreen(QWidget):
         self.bills_table.setColumnWidth(5, 120)
 
         self.bills_table.horizontalHeader().setSectionResizeMode(
-            5, QHeaderView.ResizeMode.Stretch
+            5, QHeaderView.Stretch
+        )
+        # Disable cell editing - checkboxes are for selection only
+        self.bills_table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
         )
 
         layout.addWidget(self.bills_table)
@@ -333,7 +338,7 @@ class DeliveryEntryScreen(QWidget):
         self.total_weight_input.setText(f"{total_weight:,.2f} kg")
         self.total_payment_input.setText(f"RM {total_payment:,.2f}")
 
-    def validate_inputs(self) -> tuple[bool, str]:
+    def validate_inputs(self) -> Tuple[bool, str]:
         """Validate inputs"""
         if not self.selected_mill_id:
             return False, "Please select a rice mill"

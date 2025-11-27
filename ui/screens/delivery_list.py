@@ -2,25 +2,29 @@
 Delivery Invoice List Screen
 View and manage delivery invoices
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
-    QDateEdit, QComboBox
+    QDateEdit, QComboBox, QAbstractItemView
 )
-from PyQt6.QtCore import Qt, QDate, pyqtSignal
+from PyQt5.QtCore import Qt, QDate, pyqtSignal
 from datetime import datetime
 from config.database import get_db
 from services.delivery_service import DeliveryService
 from services.purchase_service import PurchaseService
 from printing.delivery_receipt import DeliveryReceiptFormatter
 from services.config_service import ConfigService
+from services.receipt_pdf_service import ReceiptPdfService, ReceiptPdfError
+from ui.dialogs.receipt_export_dialog import ReceiptExportDialog
+import os
 
 
 class DeliveryListScreen(QWidget):
     """Screen for viewing and managing delivery invoices"""
 
-    # Signal when invoice is selected
+    # Signals
     invoice_selected = pyqtSignal(int)  # invoice_id
+    create_delivery_invoice = pyqtSignal()  # Signal to create new delivery invoice
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -32,10 +36,26 @@ class DeliveryListScreen(QWidget):
         """Setup user interface"""
         main_layout = QVBoxLayout()
 
-        # Title
+        # Title and Add Button Row
+        title_layout = QHBoxLayout()
         title = QLabel("Delivery Invoices")
         title.setStyleSheet("font-size: 18px; font-weight: bold;")
-        main_layout.addWidget(title)
+        title_layout.addWidget(title)
+        title_layout.addStretch()
+
+        # Add New Button
+        add_new_btn = QPushButton("+ Create New Delivery Invoice")
+        add_new_btn.setStyleSheet("""
+            background-color: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+        """)
+        add_new_btn.clicked.connect(self.create_delivery_invoice.emit)
+        title_layout.addWidget(add_new_btn)
+
+        main_layout.addLayout(title_layout)
 
         # Search/Filter Group
         search_layout = self._create_search_group()
@@ -61,10 +81,14 @@ class DeliveryListScreen(QWidget):
         self.invoices_table.setColumnWidth(5, 120)
         self.invoices_table.setColumnWidth(6, 100)
         self.invoices_table.setSelectionBehavior(
-            QTableWidget.SelectionBehavior.SelectRows
+            QTableWidget.SelectRows
         )
         self.invoices_table.setSelectionMode(
-            QTableWidget.SelectionMode.SingleSelection
+            QTableWidget.SingleSelection
+        )
+        # Disable cell editing - users must use the Edit button
+        self.invoices_table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
         )
 
         main_layout.addWidget(self.invoices_table)
@@ -271,7 +295,7 @@ class DeliveryListScreen(QWidget):
             )
 
     def print_receipt(self):
-        """Print receipt for selected invoice"""
+        """Print receipt for selected invoice with option to export to PDF"""
         selected_rows = self.invoices_table.selectedIndexes()
         if not selected_rows:
             QMessageBox.warning(self, "Warning", "Please select an invoice")
@@ -280,24 +304,125 @@ class DeliveryListScreen(QWidget):
         invoice_id = self.invoices_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
         invoice = DeliveryService.get_by_id(self.db, invoice_id)
 
-        if invoice:
-            # Get company info
-            company_info = {
-                'name': ConfigService.get_value(self.db, 'company_name', 'AYOP BIN ARSHAD'),
-                'address_1': ConfigService.get_value(
-                    self.db, 'company_address',
-                    'LOT 49, PARIT 10, PASIR PANJANG, 45400 SEKINCHAN, SELANGOR'
-                ),
-                'address_2': ConfigService.get_value(
-                    self.db, 'company_address_2', 'SELANGOR DARUL EHSAN'
-                ),
-                'registration': ConfigService.get_value(self.db, 'company_registration', '474523-K'),
-                'phone': ConfigService.get_value(self.db, 'company_phone', '0162120051')
-            }
+        if not invoice:
+            QMessageBox.warning(self, "Warning", "Invoice not found")
+            return
 
-            receipt = DeliveryReceiptFormatter.format_receipt(invoice, company_info)
-            print(receipt)
-            QMessageBox.information(self, "Info", "Receipt printed to console. Printer integration not yet implemented.")
+        # Show receipt export dialog
+        dialog = ReceiptExportDialog(
+            receipt_type='delivery',
+            receipt_number=invoice.invoice_number,
+            parent=self
+        )
+
+        if dialog.exec() == dialog.DialogCode.Accepted:
+            try:
+                action = dialog.get_action()
+                pdf_path = dialog.get_pdf_path()
+
+                # Get company info
+                company_info = {
+                    'name': ConfigService.get_value(self.db, 'company_name', 'AYOP BIN ARSHAD'),
+                    'address_1': ConfigService.get_value(
+                        self.db, 'company_address',
+                        'LOT 49, PARIT 10, PASIR PANJANG, 45400 SEKINCHAN, SELANGOR'
+                    ),
+                    'address_2': ConfigService.get_value(
+                        self.db, 'company_address_2', 'SELANGOR DARUL EHSAN'
+                    ),
+                    'registration': ConfigService.get_value(self.db, 'company_registration', '474523-K'),
+                    'phone': ConfigService.get_value(self.db, 'company_phone', '0162120051')
+                }
+
+                # Generate receipt text
+                receipt = DeliveryReceiptFormatter.format_receipt(invoice, company_info)
+
+                # Handle print action
+                if dialog.should_print():
+                    print(receipt)
+                    print("\n" + "="*80)
+                    print("Receipt printed to console (printer integration pending)")
+                    print("="*80 + "\n")
+
+                # Handle PDF export
+                output_pdf_path = None
+                if dialog.should_export_pdf():
+                    output_pdf_path = ReceiptPdfService.export_delivery_receipt_pdf(
+                        db=self.db,
+                        invoice_id=invoice_id,
+                        output_path=pdf_path,
+                        return_bytes=False
+                    )
+
+                # Show success message
+                if action == 'print':
+                    QMessageBox.information(
+                        self, "Success",
+                        "Receipt printed to console.\n\n"
+                        "Note: Physical printer integration not yet implemented."
+                    )
+                elif action == 'pdf':
+                    QMessageBox.information(
+                        self, "Success",
+                        f"Receipt exported to PDF successfully!\n\n"
+                        f"Location: {output_pdf_path}"
+                    )
+                    # Optionally open the PDF
+                    self._open_pdf_file(output_pdf_path)
+                elif action == 'both':
+                    QMessageBox.information(
+                        self, "Success",
+                        f"Receipt printed to console and exported to PDF!\n\n"
+                        f"PDF Location: {output_pdf_path}\n\n"
+                        f"Note: Physical printer integration not yet implemented."
+                    )
+                    # Optionally open the PDF
+                    self._open_pdf_file(output_pdf_path)
+
+            except ReceiptPdfError as e:
+                QMessageBox.critical(
+                    self, "Error",
+                    f"Failed to process receipt:\n{str(e)}"
+                )
+            except Exception as e:
+                QMessageBox.critical(
+                    self, "Error",
+                    f"Unexpected error:\n{str(e)}"
+                )
+
+    def _open_pdf_file(self, file_path: str):
+        """
+        Optionally open PDF file with system default viewer
+
+        Args:
+            file_path: Path to PDF file
+        """
+        if not file_path or not os.path.exists(file_path):
+            return
+
+        reply = QMessageBox.question(
+            self, "Open PDF",
+            "Would you like to open the PDF file now?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            try:
+                import platform
+                import subprocess
+
+                if platform.system() == 'Windows':
+                    os.startfile(file_path)
+                elif platform.system() == 'Darwin':  # macOS
+                    subprocess.run(['open', file_path])
+                else:  # Linux
+                    subprocess.run(['xdg-open', file_path])
+            except Exception as e:
+                QMessageBox.warning(
+                    self, "Warning",
+                    f"Could not open PDF file:\n{str(e)}\n\n"
+                    f"Location: {file_path}"
+                )
 
     def delete_invoice(self):
         """Delete selected invoice"""
@@ -316,12 +441,16 @@ class DeliveryListScreen(QWidget):
             self, "Confirm Delete",
             f"Are you sure you want to delete invoice {invoice.invoice_number}?\n"
             f"Associated bills will be marked as undelivered.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             if DeliveryService.delete(self.db, invoice_id):
                 QMessageBox.information(self, "Success", "Invoice deleted successfully")
                 self.load_invoices()
             else:
                 QMessageBox.critical(self, "Error", "Failed to delete invoice")
+
+    def refresh(self):
+        """Refresh the invoices list"""
+        self.load_invoices()

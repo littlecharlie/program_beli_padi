@@ -2,12 +2,12 @@
 Master Data Management Screens
 Generic CRUD screens for farmers, rice mills, and trucks
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
-    QDialog, QFormLayout, QDialogButtonBox, QSpinBox
+    QDialog, QFormLayout, QDialogButtonBox, QSpinBox, QAbstractItemView
 )
-from PyQt6.QtCore import Qt
+from PyQt5.QtCore import Qt
 from config.database import get_db
 from services.farmer_service import FarmerService
 from services.rice_mill_service import RiceMillService
@@ -72,6 +72,10 @@ class FarmerManagementScreen(QWidget):
         self.table.setColumnWidth(2, 120)
         self.table.setColumnWidth(3, 150)
         self.table.setColumnWidth(4, 80)
+        # Disable cell editing - users must use the Edit button
+        self.table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
+        )
 
         main_layout.addWidget(self.table)
         self.setLayout(main_layout)
@@ -136,10 +140,10 @@ class FarmerManagementScreen(QWidget):
         reply = QMessageBox.question(
             self, "Confirm Delete",
             f"Delete farmer {farmer.name}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             if FarmerService.delete(self.db, farmer_id):
                 QMessageBox.information(self, "Success", "Farmer deleted")
                 self.load_farmers()
@@ -192,8 +196,8 @@ class FarmerDialog(QDialog):
             self.bank_input.setText(self.farmer.bank_account or "")
 
         buttons = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Save |
-            QDialogButtonBox.StandardButton.Cancel
+            QDialogButtonBox.Save |
+            QDialogButtonBox.Cancel
         )
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
@@ -292,6 +296,10 @@ class RiceMillManagementScreen(QWidget):
             "Edit",
             "Delete"
         ])
+        # Disable cell editing - users must use the Edit button
+        self.table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
+        )
 
         main_layout.addWidget(self.table)
         self.setLayout(main_layout)
@@ -347,9 +355,9 @@ class RiceMillManagementScreen(QWidget):
             reply = QMessageBox.question(
                 self, "Confirm",
                 f"Delete {mill.mill_name}?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+                QMessageBox.Yes | QMessageBox.No
             )
-            if reply == QMessageBox.StandardButton.Yes:
+            if reply == QMessageBox.Yes:
                 if RiceMillService.delete(self.db, mill_id):
                     QMessageBox.information(self, "Success", "Mill deleted")
                     self.load_mills()
@@ -402,6 +410,10 @@ class TruckManagementScreen(QWidget):
             "Edit",
             "Delete"
         ])
+        # Disable cell editing - users must use the Edit button
+        self.table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
+        )
 
         main_layout.addWidget(self.table)
         self.setLayout(main_layout)
@@ -458,9 +470,9 @@ class TruckManagementScreen(QWidget):
             reply = QMessageBox.question(
                 self, "Confirm",
                 f"Delete truck {truck.truck_number}?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+                QMessageBox.Yes | QMessageBox.No
             )
-            if reply == QMessageBox.StandardButton.Yes:
+            if reply == QMessageBox.Yes:
                 if TruckService.delete(self.db, truck_id):
                     QMessageBox.information(self, "Success", "Truck deleted")
                     self.load_trucks()
