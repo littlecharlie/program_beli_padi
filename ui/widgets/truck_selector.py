@@ -2,11 +2,11 @@
 Truck Selector Widget
 Reusable widget for selecting trucks from dropdown
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
     QComboBox, QLabel, QDialog, QMessageBox
 )
-from PyQt6.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from services.truck_service import TruckService
 from config.database import get_db
 
@@ -31,6 +31,71 @@ class TruckSelectorWidget(QWidget):
         self.label = QLabel("Truck:")
         self.truck_combo = QComboBox()
         self.truck_combo.setMinimumWidth(200)
+
+        # Enhanced dropdown styling with visible icon
+        self.truck_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #2d2d2d;
+                color: #e0e0e0;
+                border: 1px solid #4a4a4a;
+                padding: 8px 30px 8px 8px;
+                border-radius: 4px;
+                min-height: 28px;
+            }
+
+            QComboBox:focus {
+                border: 2px solid #4da6ff;
+            }
+
+            QComboBox:disabled {
+                background-color: #1e1e1e;
+                color: #666666;
+            }
+
+            QComboBox::drop-down {
+                border: none;
+                width: 30px;
+                background-color: transparent;
+            }
+
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 6px solid #e0e0e0;
+                width: 0px;
+                height: 0px;
+                margin-right: 8px;
+            }
+
+            QComboBox::down-arrow:hover {
+                border-top: 6px solid #4da6ff;
+            }
+
+            QComboBox::down-arrow:disabled {
+                border-top: 6px solid #666666;
+            }
+
+            QComboBox QAbstractItemView {
+                background-color: #2d2d2d;
+                color: #e0e0e0;
+                border: 1px solid #4a4a4a;
+                selection-background-color: #4da6ff;
+                selection-color: white;
+                padding: 4px;
+                outline: none;
+            }
+
+            QComboBox QAbstractItemView::item {
+                padding: 8px;
+                min-height: 25px;
+            }
+
+            QComboBox QAbstractItemView::item:hover {
+                background-color: #404040;
+            }
+        """)
+
         self.add_truck_btn = QPushButton("Add New")
 
         layout.addWidget(self.label)

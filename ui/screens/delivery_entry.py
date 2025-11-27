@@ -25,6 +25,70 @@ class DeliveryEntryScreen(QWidget):
     # Signal when invoice is created
     invoice_created = pyqtSignal(int)  # invoice_id
 
+    # Enhanced dropdown styling consistent with TruckSelectorWidget
+    COMBO_BOX_STYLE = """
+        QComboBox {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            border: 1px solid #4a4a4a;
+            padding: 8px 30px 8px 8px;
+            border-radius: 4px;
+            min-height: 28px;
+        }
+
+        QComboBox:focus {
+            border: 2px solid #4da6ff;
+        }
+
+        QComboBox:disabled {
+            background-color: #1e1e1e;
+            color: #666666;
+        }
+
+        QComboBox::drop-down {
+            border: none;
+            width: 30px;
+            background-color: transparent;
+        }
+
+        QComboBox::down-arrow {
+            image: none;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #e0e0e0;
+            width: 0px;
+            height: 0px;
+            margin-right: 8px;
+        }
+
+        QComboBox::down-arrow:hover {
+            border-top: 6px solid #4da6ff;
+        }
+
+        QComboBox::down-arrow:disabled {
+            border-top: 6px solid #666666;
+        }
+
+        QComboBox QAbstractItemView {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            border: 1px solid #4a4a4a;
+            selection-background-color: #4da6ff;
+            selection-color: white;
+            padding: 4px;
+            outline: none;
+        }
+
+        QComboBox QAbstractItemView::item {
+            padding: 8px;
+            min-height: 25px;
+        }
+
+        QComboBox QAbstractItemView::item:hover {
+            background-color: #404040;
+        }
+    """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.db = get_db()
@@ -91,6 +155,7 @@ class DeliveryEntryScreen(QWidget):
         layout.addRow(QLabel("Rice Mill:"))
         mill_layout = QHBoxLayout()
         self.mill_combo = QComboBox()
+        self.mill_combo.setStyleSheet(self.COMBO_BOX_STYLE)  # Apply enhanced styling
         self.load_mills()
         self.mill_combo.currentIndexChanged.connect(self.on_mill_changed)
         mill_layout.addWidget(self.mill_combo)
@@ -101,6 +166,7 @@ class DeliveryEntryScreen(QWidget):
         layout.addRow(QLabel("Truck:"))
         truck_layout = QHBoxLayout()
         self.truck_combo = QComboBox()
+        self.truck_combo.setStyleSheet(self.COMBO_BOX_STYLE)  # Apply enhanced styling
         self.load_trucks()
         self.truck_combo.currentIndexChanged.connect(self.on_truck_changed)
         truck_layout.addWidget(self.truck_combo)

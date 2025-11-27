@@ -2,12 +2,12 @@
 Farmer Selector Widget
 Reusable widget for selecting farmers with search and auto-lookup
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
     QLineEdit, QLabel, QListWidget, QListWidgetItem,
     QDialog, QMessageBox
 )
-from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import pyqtSignal, Qt
 from services.farmer_service import FarmerService
 from config.database import get_db
 
@@ -91,7 +91,8 @@ class FarmerSelectorWidget(QWidget):
 
         if farmer:
             self.selected_farmer = farmer
-            self.ic_input.setText(farmer.ic_number)
+            # Display farmer name followed by IC number
+            self.ic_input.setText(f"{farmer.name} ({farmer.ic_number})")
             self.selected_label.setText(
                 f"Selected: {farmer.name} (IC: {farmer.ic_number})"
             )
