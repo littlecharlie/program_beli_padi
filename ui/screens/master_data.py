@@ -72,6 +72,8 @@ class FarmerManagementScreen(QWidget):
         self.table.setColumnWidth(2, 120)
         self.table.setColumnWidth(3, 150)
         self.table.setColumnWidth(4, 80)
+        self.table.setColumnWidth(5, 80)
+        self.table.setColumnWidth(6, 80)
         # Disable cell editing - users must use the Edit button
         self.table.setEditTriggers(
             QAbstractItemView.NoEditTriggers
@@ -79,6 +81,52 @@ class FarmerManagementScreen(QWidget):
 
         main_layout.addWidget(self.table)
         self.setLayout(main_layout)
+
+    def _create_table_button(self, text: str, style: str = None) -> QPushButton:
+        """
+        Create a button sized to fit table row height
+
+        Args:
+            text: Button text
+            style: Optional custom stylesheet
+
+        Returns:
+            QPushButton configured for table cell use
+        """
+        btn = QPushButton(text)
+
+        # Compact button styling that overrides global button styles
+        base_style = """
+            QPushButton {
+                padding: 4px 12px;
+                min-height: 20px;
+                max-height: 24px;
+                font-size: 9pt;
+                border-radius: 3px;
+                font-weight: 600;
+            }
+        """
+
+        if style:
+            # Merge custom style with base style
+            btn.setStyleSheet(base_style + style)
+        else:
+            # Default blue button for table actions
+            btn.setStyleSheet(base_style + """
+                QPushButton {
+                    background-color: #4da6ff;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #66b3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #3d8ae6;
+                }
+            """)
+
+        return btn
 
     def load_farmers(self):
         """Load all farmers"""
@@ -90,6 +138,9 @@ class FarmerManagementScreen(QWidget):
         self.table.setRowCount(len(farmers))
 
         for row, farmer in enumerate(farmers):
+            # Set row height for consistent button sizing
+            self.table.setRowHeight(row, 44)
+
             self.table.setItem(row, 0, QTableWidgetItem(farmer.ic_number))
             self.table.setItem(row, 1, QTableWidgetItem(farmer.name))
             self.table.setItem(row, 2, QTableWidgetItem(farmer.phone or ""))
@@ -98,12 +149,25 @@ class FarmerManagementScreen(QWidget):
             status = "Active" if farmer.is_active else "Inactive"
             self.table.setItem(row, 4, QTableWidgetItem(status))
 
-            edit_btn = QPushButton("Edit")
+            # Create properly sized buttons
+            edit_btn = self._create_table_button("Edit")
             edit_btn.clicked.connect(lambda checked, f_id=farmer.id: self.edit_farmer(f_id))
             self.table.setCellWidget(row, 5, edit_btn)
 
-            delete_btn = QPushButton("Delete")
-            delete_btn.setStyleSheet("background-color: #dc3545; color: white;")
+            # Red delete button
+            delete_btn = self._create_table_button("Delete", """
+                QPushButton {
+                    background-color: #dc3545;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #c82333;
+                }
+                QPushButton:pressed {
+                    background-color: #bd2130;
+                }
+            """)
             delete_btn.clicked.connect(lambda checked, f_id=farmer.id: self.delete_farmer(f_id))
             self.table.setCellWidget(row, 6, delete_btn)
 
@@ -296,6 +360,12 @@ class RiceMillManagementScreen(QWidget):
             "Edit",
             "Delete"
         ])
+        self.table.setColumnWidth(0, 100)
+        self.table.setColumnWidth(1, 200)
+        self.table.setColumnWidth(2, 120)
+        self.table.setColumnWidth(3, 80)
+        self.table.setColumnWidth(4, 80)
+        self.table.setColumnWidth(5, 80)
         # Disable cell editing - users must use the Edit button
         self.table.setEditTriggers(
             QAbstractItemView.NoEditTriggers
@@ -303,6 +373,52 @@ class RiceMillManagementScreen(QWidget):
 
         main_layout.addWidget(self.table)
         self.setLayout(main_layout)
+
+    def _create_table_button(self, text: str, style: str = None) -> QPushButton:
+        """
+        Create a button sized to fit table row height
+
+        Args:
+            text: Button text
+            style: Optional custom stylesheet
+
+        Returns:
+            QPushButton configured for table cell use
+        """
+        btn = QPushButton(text)
+
+        # Compact button styling that overrides global button styles
+        base_style = """
+            QPushButton {
+                padding: 4px 12px;
+                min-height: 20px;
+                max-height: 24px;
+                font-size: 9pt;
+                border-radius: 3px;
+                font-weight: 600;
+            }
+        """
+
+        if style:
+            # Merge custom style with base style
+            btn.setStyleSheet(base_style + style)
+        else:
+            # Default blue button for table actions
+            btn.setStyleSheet(base_style + """
+                QPushButton {
+                    background-color: #4da6ff;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #66b3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #3d8ae6;
+                }
+            """)
+
+        return btn
 
     def load_mills(self):
         """Load all mills"""
@@ -314,6 +430,9 @@ class RiceMillManagementScreen(QWidget):
         self.table.setRowCount(len(mills))
 
         for row, mill in enumerate(mills):
+            # Set row height for consistent button sizing
+            self.table.setRowHeight(row, 44)
+
             self.table.setItem(row, 0, QTableWidgetItem(mill.mill_code))
             self.table.setItem(row, 1, QTableWidgetItem(mill.mill_name))
             self.table.setItem(row, 2, QTableWidgetItem(mill.phone or ""))
@@ -321,12 +440,25 @@ class RiceMillManagementScreen(QWidget):
             status = "Active" if mill.is_active else "Inactive"
             self.table.setItem(row, 3, QTableWidgetItem(status))
 
-            edit_btn = QPushButton("Edit")
+            # Create properly sized buttons
+            edit_btn = self._create_table_button("Edit")
             edit_btn.clicked.connect(lambda checked, m_id=mill.id: self.edit_mill(m_id))
             self.table.setCellWidget(row, 4, edit_btn)
 
-            delete_btn = QPushButton("Delete")
-            delete_btn.setStyleSheet("background-color: #dc3545; color: white;")
+            # Red delete button
+            delete_btn = self._create_table_button("Delete", """
+                QPushButton {
+                    background-color: #dc3545;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #c82333;
+                }
+                QPushButton:pressed {
+                    background-color: #bd2130;
+                }
+            """)
             delete_btn.clicked.connect(lambda checked, m_id=mill.id: self.delete_mill(m_id))
             self.table.setCellWidget(row, 5, delete_btn)
 
@@ -410,6 +542,11 @@ class TruckManagementScreen(QWidget):
             "Edit",
             "Delete"
         ])
+        self.table.setColumnWidth(0, 150)
+        self.table.setColumnWidth(1, 120)
+        self.table.setColumnWidth(2, 80)
+        self.table.setColumnWidth(3, 80)
+        self.table.setColumnWidth(4, 80)
         # Disable cell editing - users must use the Edit button
         self.table.setEditTriggers(
             QAbstractItemView.NoEditTriggers
@@ -417,6 +554,52 @@ class TruckManagementScreen(QWidget):
 
         main_layout.addWidget(self.table)
         self.setLayout(main_layout)
+
+    def _create_table_button(self, text: str, style: str = None) -> QPushButton:
+        """
+        Create a button sized to fit table row height
+
+        Args:
+            text: Button text
+            style: Optional custom stylesheet
+
+        Returns:
+            QPushButton configured for table cell use
+        """
+        btn = QPushButton(text)
+
+        # Compact button styling that overrides global button styles
+        base_style = """
+            QPushButton {
+                padding: 4px 12px;
+                min-height: 20px;
+                max-height: 24px;
+                font-size: 9pt;
+                border-radius: 3px;
+                font-weight: 600;
+            }
+        """
+
+        if style:
+            # Merge custom style with base style
+            btn.setStyleSheet(base_style + style)
+        else:
+            # Default blue button for table actions
+            btn.setStyleSheet(base_style + """
+                QPushButton {
+                    background-color: #4da6ff;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #66b3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #3d8ae6;
+                }
+            """)
+
+        return btn
 
     def load_trucks(self):
         """Load all trucks"""
@@ -428,6 +611,9 @@ class TruckManagementScreen(QWidget):
         self.table.setRowCount(len(trucks))
 
         for row, truck in enumerate(trucks):
+            # Set row height for consistent button sizing
+            self.table.setRowHeight(row, 44)
+
             self.table.setItem(row, 0, QTableWidgetItem(truck.truck_number))
 
             tare = f"{float(truck.tare_weight):.2f}" if truck.tare_weight else "0"
@@ -436,12 +622,25 @@ class TruckManagementScreen(QWidget):
             status = "Active" if truck.is_active else "Inactive"
             self.table.setItem(row, 2, QTableWidgetItem(status))
 
-            edit_btn = QPushButton("Edit")
+            # Create properly sized buttons
+            edit_btn = self._create_table_button("Edit")
             edit_btn.clicked.connect(lambda checked, t_id=truck.id: self.edit_truck(t_id))
             self.table.setCellWidget(row, 3, edit_btn)
 
-            delete_btn = QPushButton("Delete")
-            delete_btn.setStyleSheet("background-color: #dc3545; color: white;")
+            # Red delete button
+            delete_btn = self._create_table_button("Delete", """
+                QPushButton {
+                    background-color: #dc3545;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #c82333;
+                }
+                QPushButton:pressed {
+                    background-color: #bd2130;
+                }
+            """)
             delete_btn.clicked.connect(lambda checked, t_id=truck.id: self.delete_truck(t_id))
             self.table.setCellWidget(row, 4, delete_btn)
 

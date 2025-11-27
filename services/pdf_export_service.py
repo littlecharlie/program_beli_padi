@@ -9,6 +9,7 @@ from typing import List, Optional, Union, BinaryIO
 from decimal import Decimal
 
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -928,3 +929,331 @@ class PdfExportService:
             raise
         except Exception as e:
             raise PdfExportError(f"Failed to generate date range report: {str(e)}")
+
+    @staticmethod
+    def export_farmer_summary_report(
+        db: Session,
+        start_date: date,
+        end_date: date,
+        farmer_id: Optional[int] = None,
+        output_path: Optional[str] = None,
+        return_bytes: bool = False
+    ) -> Union[str, bytes]:
+        """
+        Export farmer summary report to PDF
+
+        Args:
+            db: Database session
+            start_date: Start date of range
+            end_date: End date of range
+            farmer_id: Optional farmer ID to filter by (None for all farmers)
+            output_path: Optional custom output path
+            return_bytes: If True, return bytes instead of saving to file
+
+        Returns:
+            File path (str) or PDF bytes (bytes)
+
+        Raises:
+            InvalidDateRangeError: If date range is invalid
+            PdfExportError: If PDF generation fails
+        """
+        try:
+            # Validate date range
+            if start_date > end_date:
+                raise InvalidDateRangeError("Start date must be before or equal to end date")
+
+            # Determine output destination
+            if return_bytes:
+                buffer = BytesIO()
+                doc = SimpleDocTemplate(
+                    buffer,
+                    pagesize=A4,
+                    leftMargin=PdfExportService.MARGIN,
+                    rightMargin=PdfExportService.MARGIN,
+                    topMargin=PdfExportService.MARGIN,
+                    bottomMargin=PdfExportService.MARGIN
+                )
+            else:
+                if not output_path:
+                    export_dir = PdfExportService._get_export_directory()
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"farmer_summary_report_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}_{timestamp}.pdf"
+                    output_path = str(export_dir / filename)
+
+                doc = SimpleDocTemplate(
+                    output_path,
+                    pagesize=A4,
+                    leftMargin=PdfExportService.MARGIN,
+                    rightMargin=PdfExportService.MARGIN,
+                    topMargin=PdfExportService.MARGIN,
+                    bottomMargin=PdfExportService.MARGIN
+                )
+
+            elements = []
+            styles = PdfExportService._create_styles()
+            company_info = PdfExportService._get_company_info(db)
+
+            # Add header
+            elements.extend(PdfExportService._create_header(company_info, styles))
+
+            # Document title
+            elements.append(Paragraph("LAPORAN RINGKASAN PETANI", styles['CustomTitle']))
+            elements.append(Spacer(1, 3))
+            elements.append(Paragraph(
+                f"Tarikh: {start_date.strftime('%d/%m/%Y')} - {end_date.strftime('%d/%m/%Y')}",
+                styles['CompanyInfo']
+            ))
+            elements.append(Spacer(1, 10))
+
+            # Build query
+            query = db.query(
+                PurchaseBill.farmer_id,
+                func.count(PurchaseBill.id).label('bill_count'),
+                func.sum(PurchaseBill.net_weight).label('total_weight'),
+                func.sum(PurchaseBill.total_payment).label('total_payment')
+            ).filter(
+                PurchaseBill.bill_date >= start_date,
+                PurchaseBill.bill_date <= end_date
+            )
+
+            # Filter by farmer if specified
+            if farmer_id:
+                query = query.filter(PurchaseBill.farmer_id == farmer_id)
+
+            # Group by farmer
+            farmer_stats = query.group_by(PurchaseBill.farmer_id).all()
+
+            # Overall summary
+            total_bills = sum(stat.bill_count for stat in farmer_stats)
+            total_weight = sum(float(stat.total_weight) if stat.total_weight else 0 for stat in farmer_stats)
+            total_payment = sum(float(stat.total_payment) if stat.total_payment else 0 for stat in farmer_stats)
+
+            summary_data = [
+                ["RINGKASAN KESELURUHAN", ""],
+                ["Jumlah Petani:", str(len(farmer_stats))],
+                ["Jumlah Bil Belian:", str(total_bills)],
+                ["Jumlah Berat Bersih:", f"{total_weight:,.2f} kg"],
+                ["Jumlah Bayaran:", PdfExportService._format_currency(total_payment)],
+            ]
+
+            summary_table = Table(summary_data, colWidths=[150, 250])
+            summary_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('TOPPADDING', (0, 0), (-1, -1), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ]))
+            elements.append(summary_table)
+            elements.append(Spacer(1, 15))
+
+            # Detailed farmer table
+            elements.append(Paragraph("SENARAI TERPERINCI PETANI", styles['CustomSubtitle']))
+            elements.append(Spacer(1, 5))
+
+            farmer_data = [["No.", "Nama Petani", "No. K/P", "Bil", "Berat (kg)", "Bayaran (RM)"]]
+
+            for idx, stat in enumerate(farmer_stats, 1):
+                farmer = db.query(Farmer).filter(Farmer.id == stat.farmer_id).first()
+                farmer_data.append([
+                    str(idx),
+                    farmer.name[:25] if farmer else "N/A",
+                    farmer.ic_number if farmer else "N/A",
+                    str(stat.bill_count),
+                    f"{float(stat.total_weight):,.2f}" if stat.total_weight else "0.00",
+                    f"{float(stat.total_payment):,.2f}" if stat.total_payment else "0.00"
+                ])
+
+            farmer_table = Table(farmer_data, colWidths=[25, 120, 70, 35, 70, 70])
+            farmer_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4a90e2')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 8),
+                ('FONTSIZE', (0, 1), (-1, -1), 7),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (3, 0), (5, -1), 'RIGHT'),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('TOPPADDING', (0, 0), (-1, -1), 3),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(farmer_table)
+
+            # Build PDF
+            doc.build(elements)
+
+            if return_bytes:
+                pdf_bytes = buffer.getvalue()
+                buffer.close()
+                return pdf_bytes
+            else:
+                return output_path
+
+        except InvalidDateRangeError:
+            raise
+        except Exception as e:
+            raise PdfExportError(f"Failed to generate farmer summary report: {str(e)}")
+
+    @staticmethod
+    def export_mill_summary_report(
+        db: Session,
+        start_date: date,
+        end_date: date,
+        mill_id: Optional[int] = None,
+        output_path: Optional[str] = None,
+        return_bytes: bool = False
+    ) -> Union[str, bytes]:
+        """
+        Export mill summary report to PDF
+
+        Args:
+            db: Database session
+            start_date: Start date of range
+            end_date: End date of range
+            mill_id: Optional mill ID to filter by (None for all mills)
+            output_path: Optional custom output path
+            return_bytes: If True, return bytes instead of saving to file
+
+        Returns:
+            File path (str) or PDF bytes (bytes)
+
+        Raises:
+            InvalidDateRangeError: If date range is invalid
+            PdfExportError: If PDF generation fails
+        """
+        try:
+            # Validate date range
+            if start_date > end_date:
+                raise InvalidDateRangeError("Start date must be before or equal to end date")
+
+            # Determine output destination
+            if return_bytes:
+                buffer = BytesIO()
+                doc = SimpleDocTemplate(
+                    buffer,
+                    pagesize=A4,
+                    leftMargin=PdfExportService.MARGIN,
+                    rightMargin=PdfExportService.MARGIN,
+                    topMargin=PdfExportService.MARGIN,
+                    bottomMargin=PdfExportService.MARGIN
+                )
+            else:
+                if not output_path:
+                    export_dir = PdfExportService._get_export_directory()
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"mill_summary_report_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}_{timestamp}.pdf"
+                    output_path = str(export_dir / filename)
+
+                doc = SimpleDocTemplate(
+                    output_path,
+                    pagesize=A4,
+                    leftMargin=PdfExportService.MARGIN,
+                    rightMargin=PdfExportService.MARGIN,
+                    topMargin=PdfExportService.MARGIN,
+                    bottomMargin=PdfExportService.MARGIN
+                )
+
+            elements = []
+            styles = PdfExportService._create_styles()
+            company_info = PdfExportService._get_company_info(db)
+
+            # Add header
+            elements.extend(PdfExportService._create_header(company_info, styles))
+
+            # Document title
+            elements.append(Paragraph("LAPORAN RINGKASAN KILANG", styles['CustomTitle']))
+            elements.append(Spacer(1, 3))
+            elements.append(Paragraph(
+                f"Tarikh: {start_date.strftime('%d/%m/%Y')} - {end_date.strftime('%d/%m/%Y')}",
+                styles['CompanyInfo']
+            ))
+            elements.append(Spacer(1, 10))
+
+            # Build query
+            query = db.query(
+                DeliveryInvoice.mill_id,
+                func.count(DeliveryInvoice.id).label('invoice_count'),
+                func.sum(DeliveryInvoice.total_weight).label('total_weight')
+            ).filter(
+                DeliveryInvoice.invoice_date >= start_date,
+                DeliveryInvoice.invoice_date <= end_date
+            )
+
+            # Filter by mill if specified
+            if mill_id:
+                query = query.filter(DeliveryInvoice.mill_id == mill_id)
+
+            # Group by mill
+            mill_stats = query.group_by(DeliveryInvoice.mill_id).all()
+
+            # Overall summary
+            total_invoices = sum(stat.invoice_count for stat in mill_stats)
+            total_weight = sum(float(stat.total_weight) if stat.total_weight else 0 for stat in mill_stats)
+
+            summary_data = [
+                ["RINGKASAN KESELURUHAN", ""],
+                ["Jumlah Kilang:", str(len(mill_stats))],
+                ["Jumlah Invois Hantaran:", str(total_invoices)],
+                ["Jumlah Berat Dihantar:", f"{total_weight:,.2f} kg"],
+            ]
+
+            summary_table = Table(summary_data, colWidths=[150, 250])
+            summary_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('TOPPADDING', (0, 0), (-1, -1), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ]))
+            elements.append(summary_table)
+            elements.append(Spacer(1, 15))
+
+            # Detailed mill table
+            elements.append(Paragraph("SENARAI TERPERINCI KILANG", styles['CustomSubtitle']))
+            elements.append(Spacer(1, 5))
+
+            mill_data = [["No.", "Nama Kilang", "Alamat", "Invois", "Berat (kg)"]]
+
+            for idx, stat in enumerate(mill_stats, 1):
+                mill = db.query(RiceMill).filter(RiceMill.id == stat.mill_id).first()
+                mill_data.append([
+                    str(idx),
+                    mill.mill_name[:30] if mill else "N/A",
+                    mill.address[:40] if mill and mill.address else "N/A",
+                    str(stat.invoice_count),
+                    f"{float(stat.total_weight):,.2f}" if stat.total_weight else "0.00"
+                ])
+
+            mill_table = Table(mill_data, colWidths=[25, 130, 130, 45, 60])
+            mill_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4a90e2')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 8),
+                ('FONTSIZE', (0, 1), (-1, -1), 7),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (3, 0), (4, -1), 'RIGHT'),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('TOPPADDING', (0, 0), (-1, -1), 3),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(mill_table)
+
+            # Build PDF
+            doc.build(elements)
+
+            if return_bytes:
+                pdf_bytes = buffer.getvalue()
+                buffer.close()
+                return pdf_bytes
+            else:
+                return output_path
+
+        except InvalidDateRangeError:
+            raise
+        except Exception as e:
+            raise PdfExportError(f"Failed to generate mill summary report: {str(e)}")

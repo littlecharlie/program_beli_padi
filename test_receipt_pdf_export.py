@@ -158,7 +158,7 @@ def test_delivery_receipt_pdf():
             'registration': ConfigService.get_value(db, 'company_registration', '474523-K'),
             'phone': ConfigService.get_value(db, 'company_phone', '0162120051')
         }
-        receipt_text = DeliveryReceiptFormatter.format_receipt(invoice, company_info)
+        receipt_text = DeliveryReceiptFormatter.format_receipt(db, invoice, company_info)
         lines = receipt_text.split('\n')[:20]
         for line in lines:
             print(line)

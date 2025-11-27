@@ -2,9 +2,9 @@
 Context Menu Mixin
 Provides reusable context menu functionality for table widgets
 """
-from PyQt6.QtWidgets import QMenu, QTableWidget
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QAction, QKeySequence
+from PyQt5.QtWidgets import QMenu, QTableWidget
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QAction, QKeySequence
 
 
 class TableContextMenuMixin:
@@ -38,12 +38,12 @@ class TableContextMenuMixin:
         self.export_enabled = export_enabled
 
         # Enable custom context menu
-        table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        table.setContextMenuPolicy(Qt.CustomContextMenu)
         table.customContextMenuRequested.connect(self._show_context_menu)
 
         # Enable multi-selection for batch operations
-        table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
-        table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        table.setSelectionMode(QTableWidget.ExtendedSelection)
+        table.setSelectionBehavior(QTableWidget.SelectRows)
 
     def _show_context_menu(self, position):
         """Show context menu at cursor position"""
@@ -131,7 +131,7 @@ class TableContextMenuMixin:
         # Delete action
         if single_selection:
             delete_action = QAction("Delete", table)
-            delete_action.setShortcut(QKeySequence.StandardKey.Delete)
+            delete_action.setShortcut(QKeySequence.Delete)
             delete_action.triggered.connect(lambda: self.delete_item.emit(item_id))
             menu.addAction(delete_action)
         else:
@@ -157,8 +157,8 @@ class ExportToolbarMixin:
 
     def create_export_toolbar(self):
         """Create toolbar with export buttons"""
-        from PyQt6.QtWidgets import QToolBar, QToolButton
-        from PyQt6.QtCore import QSize
+        from PyQt5.QtWidgets import QToolBar, QToolButton
+        from PyQt5.QtCore import QSize
 
         toolbar = QToolBar()
         toolbar.setMovable(False)

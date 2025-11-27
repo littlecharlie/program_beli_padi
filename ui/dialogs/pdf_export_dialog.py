@@ -2,12 +2,12 @@
 PDF Export Dialog
 Dialog for exporting purchase bills and delivery invoices to PDF
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QLineEdit, QCheckBox, QGroupBox, QRadioButton, QButtonGroup,
     QFileDialog, QProgressBar, QMessageBox, QComboBox
 )
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from pathlib import Path
 from datetime import datetime
 import os

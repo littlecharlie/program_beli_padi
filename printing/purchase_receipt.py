@@ -4,11 +4,15 @@ Formats purchase bills for printing on Epson LQ-310
 """
 import os
 from datetime import datetime
+from sqlalchemy.orm import Session
 from printing.escpos_commands import EscposCommands
+from printing.purchase_formatter import PurchaseReceiptFormatter as PurchaseFormatterV2
+from printing.layout_utils import ReceiptLayoutUtils
+from services.receipt_data_service import ReceiptDataService
 
 
 class PurchaseReceiptFormatter:
-    """Format purchase bills for printing"""
+    """Format purchase bills for printing - supports both legacy and new format"""
 
     LINE_WIDTH = 80
 
@@ -92,6 +96,42 @@ class PurchaseReceiptFormatter:
         )
 
         return receipt
+
+    @staticmethod
+    def format_receipt_v2(db: Session, purchase_bill) -> str:
+        """
+        Format purchase bill using new formatter (matches sample PDF)
+
+        Args:
+            db: Database session
+            purchase_bill: PurchaseBill model object
+
+        Returns:
+            Formatted receipt string
+        """
+        # Prepare structured data
+        receipt_data = ReceiptDataService.prepare_purchase_bill_data(db, purchase_bill)
+
+        # Generate formatted receipt
+        return PurchaseFormatterV2.format_receipt(receipt_data)
+
+    @staticmethod
+    def format_receipt_v2_for_printing(db: Session, purchase_bill) -> str:
+        """
+        Format purchase bill with ESC/P commands for printing
+
+        Args:
+            db: Database session
+            purchase_bill: PurchaseBill model object
+
+        Returns:
+            Formatted receipt with ESC/P commands
+        """
+        # Prepare structured data
+        receipt_data = ReceiptDataService.prepare_purchase_bill_data(db, purchase_bill)
+
+        # Generate formatted receipt with printer commands
+        return PurchaseFormatterV2.format_receipt_for_printing(receipt_data)
 
     @staticmethod
     def generate_receipt(purchase_bill, company_info: dict) -> str:

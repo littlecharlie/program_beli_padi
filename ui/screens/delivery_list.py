@@ -184,6 +184,52 @@ class DeliveryListScreen(QWidget):
 
         return layout
 
+    def _create_table_button(self, text: str, style: str = None) -> QPushButton:
+        """
+        Create a button sized to fit table row height
+
+        Args:
+            text: Button text
+            style: Optional custom stylesheet
+
+        Returns:
+            QPushButton configured for table cell use
+        """
+        btn = QPushButton(text)
+
+        # Compact button styling that overrides global button styles
+        base_style = """
+            QPushButton {
+                padding: 4px 12px;
+                min-height: 20px;
+                max-height: 24px;
+                font-size: 9pt;
+                border-radius: 3px;
+                font-weight: 600;
+            }
+        """
+
+        if style:
+            # Merge custom style with base style
+            btn.setStyleSheet(base_style + style)
+        else:
+            # Default blue button for table actions
+            btn.setStyleSheet(base_style + """
+                QPushButton {
+                    background-color: #4da6ff;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #66b3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #3d8ae6;
+                }
+            """)
+
+        return btn
+
     def load_mills(self):
         """Load rice mills into combo box"""
         from services.rice_mill_service import RiceMillService
@@ -201,6 +247,9 @@ class DeliveryListScreen(QWidget):
         self.invoices_table.setRowCount(len(invoices))
 
         for row, invoice in enumerate(invoices):
+            # Set row height for consistent button sizing
+            self.invoices_table.setRowHeight(row, 44)
+
             # Invoice number
             item = QTableWidgetItem(invoice.invoice_number)
             item.setData(Qt.ItemDataRole.UserRole, invoice.id)
@@ -226,8 +275,8 @@ class DeliveryListScreen(QWidget):
             weight_str = f"{float(invoice.total_weight):,.2f} kg"
             self.invoices_table.setItem(row, 5, QTableWidgetItem(weight_str))
 
-            # Actions
-            actions_btn = QPushButton("View")
+            # Actions - Create properly sized button
+            actions_btn = self._create_table_button("View")
             actions_btn.clicked.connect(lambda checked, inv_id=invoice.id: self.view_invoice(inv_id))
             self.invoices_table.setCellWidget(row, 6, actions_btn)
 
@@ -334,8 +383,8 @@ class DeliveryListScreen(QWidget):
                     'phone': ConfigService.get_value(self.db, 'company_phone', '0162120051')
                 }
 
-                # Generate receipt text
-                receipt = DeliveryReceiptFormatter.format_receipt(invoice, company_info)
+                # Generate receipt text - NOW PASSING DATABASE SESSION
+                receipt = DeliveryReceiptFormatter.format_receipt(self.db, invoice, company_info)
 
                 # Handle print action
                 if dialog.should_print():

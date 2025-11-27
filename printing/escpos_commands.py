@@ -27,6 +27,12 @@ class EscposCommands:
     LINE_SPACING_6 = ESC + '2'  # 6 lines per inch
     LINE_SPACING_8 = ESC + '0'  # 8 lines per inch
 
+    # Character pitch (for 80 columns on standard paper)
+    PICA_10CPI = ESC + 'P'  # 10 characters per inch
+    ELITE_12CPI = ESC + 'M'  # 12 characters per inch
+    CONDENSED_ON = ESC + chr(15)  # Condensed mode
+    CONDENSED_OFF = ESC + chr(18)  # End condensed mode
+
     # Alignment (for dot matrix, these may not work)
     LEFT_ALIGN = ESC + 'a' + chr(0)
     CENTER_ALIGN = ESC + 'a' + chr(1)
@@ -34,6 +40,7 @@ class EscposCommands:
 
     # Feed paper
     FORM_FEED = chr(12)  # Eject page
+    LINE_FEED = chr(10)  # New line
 
     # Cut paper (if printer supports it)
     CUT_PAPER = ESC + 'i'

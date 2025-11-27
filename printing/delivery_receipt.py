@@ -4,6 +4,7 @@ Formats delivery invoices for printing on Epson LQ-310
 """
 import os
 from datetime import datetime
+from sqlalchemy.orm import Session
 from printing.escpos_commands import EscposCommands
 
 
@@ -28,11 +29,12 @@ class DeliveryReceiptFormatter:
             return ""
 
     @staticmethod
-    def format_receipt(delivery_invoice, company_info: dict) -> str:
+    def format_receipt(db: Session, delivery_invoice, company_info: dict) -> str:
         """
         Format delivery invoice receipt
 
         Args:
+            db: Database session
             delivery_invoice: DeliveryInvoice model object
             company_info: Dictionary with company information
 
@@ -41,7 +43,7 @@ class DeliveryReceiptFormatter:
         """
         # Get bill items
         from services.delivery_service import DeliveryService
-        bills = DeliveryService.get_bills_for_invoice(None, delivery_invoice.id)
+        bills = DeliveryService.get_bills_for_invoice(db, delivery_invoice.id)
 
         # Format bill items for template
         bill_items = []

@@ -3,6 +3,7 @@ Calculation Service
 Contains all business calculation logic for purchase bills and deliveries
 """
 from decimal import Decimal, ROUND_HALF_UP
+from typing import Tuple
 
 
 class CalculationService:
@@ -193,7 +194,7 @@ class CalculationService:
 
     @staticmethod
     def validate_total_discount(wap_basah: float, hampa_padi: float,
-                               padi_muda: float) -> tuple[bool, str]:
+                               padi_muda: float) -> Tuple[bool, str]:
         """
         Validate that total discount does not exceed 100%
 

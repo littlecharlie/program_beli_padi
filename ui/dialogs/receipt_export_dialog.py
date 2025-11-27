@@ -2,12 +2,12 @@
 Receipt Export Dialog
 Provides options to print receipt, save as PDF, or both
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QCheckBox, QFileDialog, QMessageBox, QGroupBox, QRadioButton,
     QButtonGroup, QLineEdit
 )
-from PyQt6.QtCore import Qt
+from PyQt5.QtCore import Qt
 from pathlib import Path
 import os
 

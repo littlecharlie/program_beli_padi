@@ -332,7 +332,7 @@ class DeliveryListScreenWithExport(QWidget, TableContextMenuMixin):
                 'phone': ConfigService.get_value(self.db, 'company_phone', '0162120051')
             }
 
-            receipt = DeliveryReceiptFormatter.format_receipt(invoice, company_info)
+            receipt = DeliveryReceiptFormatter.format_receipt(self.db, invoice, company_info)
             print(receipt)
             QMessageBox.information(self, "Info", "Receipt printed to console. Printer integration not yet implemented.")
 

@@ -5,13 +5,14 @@ Input validation for all user inputs
 import re
 from datetime import datetime
 from decimal import Decimal
+from typing import Tuple
 
 
 class Validators:
     """Input validation class"""
 
     @staticmethod
-    def validate_ic_number(ic: str) -> tuple[bool, str]:
+    def validate_ic_number(ic: str) -> Tuple[bool, str]:
         """
         Validate Malaysian IC number (12 digits)
 
@@ -32,7 +33,7 @@ class Validators:
         return True, ""
 
     @staticmethod
-    def validate_weight(weight, field_name: str = "Weight") -> tuple[bool, str]:
+    def validate_weight(weight, field_name: str = "Weight") -> Tuple[bool, str]:
         """
         Validate weight value
 
@@ -56,7 +57,7 @@ class Validators:
         return True, ""
 
     @staticmethod
-    def validate_percentage(percent, field_name: str = "Percentage") -> tuple[bool, str]:
+    def validate_percentage(percent, field_name: str = "Percentage") -> Tuple[bool, str]:
         """
         Validate percentage value (0-100)
 
@@ -77,7 +78,7 @@ class Validators:
         return True, ""
 
     @staticmethod
-    def validate_phone(phone: str) -> tuple[bool, str]:
+    def validate_phone(phone: str) -> Tuple[bool, str]:
         """
         Validate Malaysian phone number
 
@@ -95,7 +96,7 @@ class Validators:
         return True, ""
 
     @staticmethod
-    def validate_truck_number(truck_number: str) -> tuple[bool, str]:
+    def validate_truck_number(truck_number: str) -> Tuple[bool, str]:
         """
         Validate truck number
 
@@ -114,7 +115,7 @@ class Validators:
         return True, ""
 
     @staticmethod
-    def validate_date(date: datetime) -> tuple[bool, str]:
+    def validate_date(date: datetime) -> Tuple[bool, str]:
         """
         Validate date (cannot be future)
 
@@ -130,7 +131,7 @@ class Validators:
         return True, ""
 
     @staticmethod
-    def validate_required_field(value, field_name: str) -> tuple[bool, str]:
+    def validate_required_field(value, field_name: str) -> Tuple[bool, str]:
         """
         Validate required field
 
@@ -143,7 +144,7 @@ class Validators:
         return True, ""
 
     @staticmethod
-    def validate_decimal(value, field_name: str = "Value", min_val=None, max_val=None) -> tuple[bool, str]:
+    def validate_decimal(value, field_name: str = "Value", min_val=None, max_val=None) -> Tuple[bool, str]:
         """
         Validate decimal value
 

@@ -5,7 +5,7 @@ Main application entry point
 import sys
 import os
 from dotenv import load_dotenv
-from PyQt6.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMessageBox
 
 # Load environment variables
 load_dotenv()
@@ -55,7 +55,7 @@ def main():
         )
 
     # Run application
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':

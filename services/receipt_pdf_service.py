@@ -227,8 +227,8 @@ class ReceiptPdfService:
             # Get company info
             company_info = ReceiptPdfService._get_company_info(db)
 
-            # Generate receipt text
-            receipt_text = DeliveryReceiptFormatter.format_receipt(invoice, company_info)
+            # Generate receipt text - NOW PASSING DATABASE SESSION
+            receipt_text = DeliveryReceiptFormatter.format_receipt(db, invoice, company_info)
 
             # Determine output path
             if not return_bytes and not output_path:
@@ -316,8 +316,11 @@ class ReceiptPdfService:
                 if not invoice:
                     raise ReceiptPdfError(f"Delivery invoice with ID {bill_or_invoice_id} not found")
 
-                # Generate receipt text
-                receipt_text = DeliveryReceiptFormatter.format_receipt(invoice, company_info)
+                # Get company info
+                company_info = ReceiptPdfService._get_company_info(db)
+
+                # Generate receipt text - NOW PASSING DATABASE SESSION
+                receipt_text = DeliveryReceiptFormatter.format_receipt(db, invoice, company_info)
 
                 # Print to console/printer
                 if do_print:

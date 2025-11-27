@@ -2,7 +2,7 @@
 Settings Screen
 System configuration management
 """
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QGroupBox, QFormLayout, QMessageBox, QDoubleSpinBox,
     QSpinBox
@@ -67,26 +67,31 @@ class SettingsScreen(QWidget):
         self.rice_price_input = QDoubleSpinBox()
         self.rice_price_input.setRange(0, 10000)
         self.rice_price_input.setDecimals(2)
+        self.rice_price_input.setFixedHeight(25)
         layout.addRow("Rice Price (per 1000kg):", self.rice_price_input)
 
         self.subsidy_rate_input = QDoubleSpinBox()
         self.subsidy_rate_input.setRange(0, 100)
         self.subsidy_rate_input.setDecimals(2)
+        self.subsidy_rate_input.setFixedHeight(25)
         layout.addRow("Subsidy Rate (per kg):", self.subsidy_rate_input)
 
         self.wap_basah_input = QDoubleSpinBox()
         self.wap_basah_input.setRange(0, 100)
         self.wap_basah_input.setDecimals(2)
+        self.wap_basah_input.setFixedHeight(25)
         layout.addRow("Default Wap Basah (%):", self.wap_basah_input)
 
         self.hampa_padi_input = QDoubleSpinBox()
         self.hampa_padi_input.setRange(0, 100)
         self.hampa_padi_input.setDecimals(2)
+        self.hampa_padi_input.setFixedHeight(25)
         layout.addRow("Default Hampa Padi (%):", self.hampa_padi_input)
 
         self.padi_muda_input = QDoubleSpinBox()
         self.padi_muda_input.setRange(0, 100)
         self.padi_muda_input.setDecimals(2)
+        self.padi_muda_input.setFixedHeight(25)
         layout.addRow("Default Padi Muda (%):", self.padi_muda_input)
 
         group.setLayout(layout)
@@ -98,21 +103,27 @@ class SettingsScreen(QWidget):
         layout = QFormLayout()
 
         self.company_name_input = QLineEdit()
+        self.company_name_input.setFixedHeight(45)
         layout.addRow("Company Name:", self.company_name_input)
 
         self.company_address1_input = QLineEdit()
+        self.company_address1_input.setFixedHeight(45)
         layout.addRow("Address Line 1:", self.company_address1_input)
 
         self.company_address2_input = QLineEdit()
+        self.company_address2_input.setFixedHeight(45)
         layout.addRow("Address Line 2:", self.company_address2_input)
 
         self.company_reg_input = QLineEdit()
+        self.company_reg_input.setFixedHeight(45)
         layout.addRow("Registration Number:", self.company_reg_input)
 
         self.company_phone_input = QLineEdit()
+        self.company_phone_input.setFixedHeight(45)
         layout.addRow("Phone Number:", self.company_phone_input)
 
         self.manager_name_input = QLineEdit()
+        self.manager_name_input.setFixedHeight(45)
         layout.addRow("Manager Name:", self.manager_name_input)
 
         group.setLayout(layout)
@@ -245,10 +256,10 @@ class SettingsScreen(QWidget):
         reply = QMessageBox.question(
             self, "Confirm",
             "Reset all settings to defaults?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             # Reset to default values
             self.rice_price_input.setValue(1500.00)
             self.subsidy_rate_input.setValue(0.50)

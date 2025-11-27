@@ -15,6 +15,8 @@ from printing.purchase_receipt import PurchaseReceiptFormatter
 from services.config_service import ConfigService
 from services.receipt_pdf_service import ReceiptPdfService, ReceiptPdfError
 from ui.dialogs.receipt_export_dialog import ReceiptExportDialog
+# Edit functionality disabled per user request
+# from ui.dialogs.purchase_edit_dialog import PurchaseEditDialog
 import os
 
 
@@ -163,9 +165,6 @@ class PurchaseListScreen(QWidget):
         )
         self.new_bill_btn.clicked.connect(self._on_create_purchase_bill)
 
-        self.edit_btn = QPushButton("Edit")
-        self.edit_btn.clicked.connect(self.edit_bill)
-
         self.print_btn = QPushButton("Print Receipt")
         self.print_btn.clicked.connect(self.print_receipt)
 
@@ -174,12 +173,57 @@ class PurchaseListScreen(QWidget):
         self.delete_btn.clicked.connect(self.delete_bill)
 
         layout.addWidget(self.new_bill_btn)
-        layout.addWidget(self.edit_btn)
         layout.addWidget(self.print_btn)
         layout.addWidget(self.delete_btn)
         layout.addStretch()
 
         return layout
+
+    def _create_table_button(self, text: str, style: str = None) -> QPushButton:
+        """
+        Create a button sized to fit table row height
+
+        Args:
+            text: Button text
+            style: Optional custom stylesheet
+
+        Returns:
+            QPushButton configured for table cell use
+        """
+        btn = QPushButton(text)
+
+        # Compact button styling that overrides global button styles
+        base_style = """
+            QPushButton {
+                padding: 4px 12px;
+                min-height: 20px;
+                max-height: 24px;
+                font-size: 9pt;
+                border-radius: 3px;
+                font-weight: 600;
+            }
+        """
+
+        if style:
+            # Merge custom style with base style
+            btn.setStyleSheet(base_style + style)
+        else:
+            # Default blue button for table actions
+            btn.setStyleSheet(base_style + """
+                QPushButton {
+                    background-color: #4da6ff;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #66b3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #3d8ae6;
+                }
+            """)
+
+        return btn
 
     def _on_create_purchase_bill(self):
         """Handle create new purchase bill button click"""
@@ -195,6 +239,9 @@ class PurchaseListScreen(QWidget):
         self.bills_table.setRowCount(len(bills))
 
         for row, bill in enumerate(bills):
+            # Set row height for consistent button sizing
+            self.bills_table.setRowHeight(row, 44)
+
             # Bill number
             item = QTableWidgetItem(bill.bill_number)
             item.setData(Qt.ItemDataRole.UserRole, bill.id)
@@ -228,8 +275,8 @@ class PurchaseListScreen(QWidget):
             created_by = bill.created_by or "System"
             self.bills_table.setItem(row, 7, QTableWidgetItem(created_by))
 
-            # Actions
-            actions_btn = QPushButton("View")
+            # Actions - Create properly sized button
+            actions_btn = self._create_table_button("View")
             actions_btn.clicked.connect(lambda checked, b_id=bill.id: self.view_bill(b_id))
             self.bills_table.setCellWidget(row, 8, actions_btn)
 
@@ -279,21 +326,35 @@ class PurchaseListScreen(QWidget):
                 f"Total Payment: RM {float(bill.total_payment):,.2f}"
             )
 
-    def edit_bill(self):
-        """Edit selected bill"""
-        selected_rows = self.bills_table.selectedIndexes()
-        if not selected_rows:
-            QMessageBox.warning(self, "Warning", "Please select a bill to edit")
-            return
-
-        bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
-        bill = PurchaseService.get_by_id(self.db, bill_id)
-
-        if bill and bill.is_delivered:
-            QMessageBox.warning(self, "Warning", "Cannot edit delivered bills")
-            return
-
-        QMessageBox.information(self, "Info", "Edit functionality not yet implemented")
+    # Edit functionality disabled per user request
+    # This code can be re-enabled in the future if needed
+    # def edit_bill(self):
+    #     """Edit selected bill"""
+    #     selected_rows = self.bills_table.selectedIndexes()
+    #     if not selected_rows:
+    #         QMessageBox.warning(self, "Warning", "Please select a bill to edit")
+    #         return
+    #
+    #     bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+    #     bill = PurchaseService.get_by_id(self.db, bill_id)
+    #
+    #     if not bill:
+    #         QMessageBox.warning(self, "Warning", "Bill not found")
+    #         return
+    #
+    #     if bill.is_delivered:
+    #         QMessageBox.warning(self, "Warning", "Cannot edit delivered bills")
+    #         return
+    #
+    #     # Open edit dialog
+    #     dialog = PurchaseEditDialog(bill_id=bill_id, parent=self)
+    #     if dialog.exec() == dialog.DialogCode.Accepted:
+    #         # Refresh the table to show updated data
+    #         self.load_bills()
+    #         QMessageBox.information(
+    #             self, "Success",
+    #             f"Bill {bill.bill_number} has been updated"
+    #         )
 
     def print_receipt(self):
         """Print receipt for selected bill with option to export to PDF"""

@@ -2,11 +2,12 @@
 Export Helper Functions
 Utilities for PDF export operations, notifications, and file handling
 """
-from PyQt6.QtWidgets import QMessageBox, QWidget
-from PyQt6.QtCore import QTimer
+from PyQt5.QtWidgets import QMessageBox, QWidget
+from PyQt5.QtCore import QTimer
 import subprocess
 import platform
 from pathlib import Path
+from typing import Tuple
 
 
 class ExportNotification:
@@ -24,11 +25,11 @@ class ExportNotification:
         """
         item_text = "item" if item_count == 1 else "items"
         msg = QMessageBox(parent)
-        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Export Successful")
         msg.setText(f"Successfully exported {item_count} {item_text} to PDF")
         msg.setInformativeText(f"File saved to:\n{file_path}")
-        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg.setStandardButtons(QMessageBox.Ok)
         msg.exec()
 
     @staticmethod
@@ -89,10 +90,10 @@ class ExportNotification:
             parent,
             "File Exists",
             f"The file already exists:\n{file_path}\n\nDo you want to overwrite it?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
         )
-        return reply == QMessageBox.StandardButton.Yes
+        return reply == QMessageBox.Yes
 
 
 class FileOperations:
@@ -199,7 +200,7 @@ class FileOperations:
             counter += 1
 
     @staticmethod
-    def validate_path(file_path: str) -> tuple[bool, str]:
+    def validate_path(file_path: str) -> Tuple[bool, str]:
         """
         Validate file path for writing
 
@@ -249,9 +250,9 @@ class ToastNotification:
         # Note: This is a simplified version
         # In a production app, you might want a custom toast widget
         msg = QMessageBox(parent)
-        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setIcon(QMessageBox.Information)
         msg.setText(message)
-        msg.setStandardButtons(QMessageBox.StandardButton.NoButton)
+        msg.setStandardButtons(QMessageBox.NoButton)
         msg.setWindowTitle("Notification")
 
         # Auto-close after duration
