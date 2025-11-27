@@ -22,6 +22,7 @@ from models.delivery_invoice import DeliveryInvoice
 from printing.purchase_receipt import PurchaseReceiptFormatter
 from printing.delivery_receipt import DeliveryReceiptFormatter
 from services.config_service import ConfigService
+from services.receipt_data_service import ReceiptDataService
 
 
 class ReceiptPdfError(Exception):
@@ -169,11 +170,8 @@ class ReceiptPdfService:
             if not bill:
                 raise ReceiptPdfError(f"Purchase bill with ID {bill_id} not found")
 
-            # Get company info
-            company_info = ReceiptPdfService._get_company_info(db)
-
-            # Generate receipt text
-            receipt_text = PurchaseReceiptFormatter.format_receipt(bill, company_info)
+            # Generate receipt text using V2 formatter (new format)
+            receipt_text = PurchaseReceiptFormatter.format_receipt_v2(db, bill)
 
             # Determine output path
             if not return_bytes and not output_path:
@@ -281,9 +279,6 @@ class ReceiptPdfService:
         try:
             pdf_path = None
 
-            # Get company info
-            company_info = ReceiptPdfService._get_company_info(db)
-
             if receipt_type == 'purchase':
                 # Get purchase bill
                 bill = db.query(PurchaseBill).filter(
@@ -293,8 +288,8 @@ class ReceiptPdfService:
                 if not bill:
                     raise ReceiptPdfError(f"Purchase bill with ID {bill_or_invoice_id} not found")
 
-                # Generate receipt text
-                receipt_text = PurchaseReceiptFormatter.format_receipt(bill, company_info)
+                # Generate receipt text using V2 formatter (new format)
+                receipt_text = PurchaseReceiptFormatter.format_receipt_v2(db, bill)
 
                 # Print to console/printer
                 if do_print:
