@@ -1,0 +1,85 @@
+RICE BILLING SYSTEM - SOFTWARE LICENSE AGREEMENT
+
+Copyright (c) 2024 AYOP BIN ARSHAD
+All rights reserved.
+
+GRANT OF LICENSE
+
+This software is provided to you for use in managing rice purchase and delivery
+operations. By installing this software, you agree to the following terms:
+
+1. PERMITTED USE
+   - You may install and use this software on computers operated by or for
+     AYOP BIN ARSHAD rice business
+   - You may make backup copies for archival purposes
+   - You may use this software for its intended purpose of managing rice
+     purchase bills and delivery invoices
+
+2. RESTRICTIONS
+   - You may not distribute this software to third parties without permission
+   - You may not reverse engineer, decompile, or disassemble the software
+   - You may not remove or alter any copyright notices
+   - You may not use this software for illegal purposes
+
+3. DATA AND PRIVACY
+   - This software stores data locally on your computer and/or database
+   - You are responsible for backing up your data
+   - You are responsible for maintaining the security of your database
+   - No data is transmitted to external servers without your explicit action
+
+4. DATABASE
+   - If using PostgreSQL mode, you are responsible for PostgreSQL licensing
+   - You are responsible for database backup and maintenance
+   - Database credentials are stored locally in the .env file
+
+5. PRINTER
+   - Epson LQ-310 printer and drivers are not included
+   - You are responsible for printer driver installation and licensing
+   - Printer functionality requires compatible hardware
+
+6. NO WARRANTY
+   This software is provided "AS IS" without warranty of any kind, either
+   expressed or implied, including but not limited to the implied warranties
+   of merchantability and fitness for a particular purpose.
+
+7. LIMITATION OF LIABILITY
+   In no event shall AYOP BIN ARSHAD be liable for any damages whatsoever
+   (including, without limitation, damages for loss of business profits,
+   business interruption, loss of business information, or other pecuniary
+   loss) arising out of the use of or inability to use this software.
+
+8. SUPPORT
+   Technical support may be provided at the discretion of AYOP BIN ARSHAD.
+   No guarantee of support or updates is provided.
+
+9. TERMINATION
+   This license is effective until terminated. You may terminate it at any
+   time by uninstalling the software and destroying all copies.
+
+10. GOVERNING LAW
+    This license shall be governed by the laws of Malaysia.
+
+THIRD-PARTY COMPONENTS
+
+This software includes the following open-source components:
+- Python (Python Software Foundation License)
+- PyQt5 (GPL v3)
+- PostgreSQL (PostgreSQL License)
+- SQLAlchemy (MIT License)
+- ReportLab (BSD License)
+- python-escpos (MIT License)
+
+Each component is subject to its own license terms.
+
+ACCEPTANCE
+
+By installing this software, you acknowledge that you have read this license
+agreement, understand it, and agree to be bound by its terms.
+
+If you do not agree to these terms, do not install or use this software.
+
+---
+
+For questions about this license, contact:
+AYOP BIN ARSHAD
+Sekinchan, Selangor, Malaysia

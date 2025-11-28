@@ -1,0 +1,31 @@
+[Application]
+name = Rice Billing System
+version = 1.0.0
+company = AYOP BIN ARSHAD
+
+[Window]
+width = 1280
+height = 720
+remember_size = true
+remember_position = true
+
+[Database]
+auto_backup = true
+backup_interval_days = 7
+backup_keep_count = 30
+
+[Printing]
+auto_print_on_save = false
+print_preview = true
+default_copies = 1
+
+[Export]
+default_export_path = exports
+pdf_quality = high
+auto_open_pdf = false
+
+[UI]
+theme = light
+language = en
+date_format = DD/MM/YYYY
+number_format = #,##0.00

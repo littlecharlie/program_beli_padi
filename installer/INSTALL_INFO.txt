@@ -1,0 +1,160 @@
+RICE BILLING SYSTEM - INSTALLATION INFORMATION
+
+Welcome to the Rice Billing System installer!
+
+═══════════════════════════════════════════════════════════════
+
+BEFORE YOU INSTALL - IMPORTANT INFORMATION
+
+═══════════════════════════════════════════════════════════════
+
+SYSTEM REQUIREMENTS:
+
+  Minimum:
+  ✓ Windows 7 SP1 or later (7, 8, 8.1, 10, 11)
+  ✓ 2 GB RAM
+  ✓ 500 MB free disk space
+  ✓ 1024x768 screen resolution
+
+  Recommended:
+  ✓ Windows 10 or later
+  ✓ 4 GB RAM
+  ✓ 2 GB free disk space
+  ✓ 1280x720 or higher resolution
+
+═══════════════════════════════════════════════════════════════
+
+INSTALLATION MODES:
+
+You will be asked to choose between two modes:
+
+  1. DATABASE MODE (Recommended for production)
+     - Requires PostgreSQL database installed
+     - Full functionality with data persistence
+     - Suitable for daily operations
+     - Multiple users can access same database
+
+  2. DEMO MODE (For testing only)
+     - No database required
+     - Limited functionality
+     - Data not saved permanently
+     - Good for evaluation and testing
+
+═══════════════════════════════════════════════════════════════
+
+POSTGRESQL DATABASE (Required for Database Mode):
+
+If you choose Database Mode, you MUST have PostgreSQL installed:
+
+  Download PostgreSQL:
+  → https://www.postgresql.org/download/windows/
+
+  Compatible versions:
+  → PostgreSQL 13, 14, 15, or 16
+
+  What you need:
+  → Database Host (usually "localhost")
+  → Database Port (usually "5432")
+  → Database Name (recommended: "rice_billing_db")
+  → Database User (default: "postgres")
+  → Database Password (set during PostgreSQL installation)
+
+  The installer will ask for these details.
+
+═══════════════════════════════════════════════════════════════
+
+EPSON LQ-310 PRINTER:
+
+For printing receipts, you need:
+
+  ✓ Epson LQ-310 dot matrix printer (or compatible)
+  ✓ USB cable connection
+  ✓ Epson LQ-310 Windows driver installed
+
+  Download printer driver:
+  → https://epson.com/Support/Printers/Dot-Matrix/LQ-Series/Epson-LQ-310/s/SPT_C11CC24001
+
+  Note: Printer can be configured after installation
+
+═══════════════════════════════════════════════════════════════
+
+INSTALLATION STEPS:
+
+  1. Choose installation folder
+     (Default: C:\Program Files\Rice Billing System)
+
+  2. Select components
+     - Core application (required)
+     - Desktop shortcuts (recommended)
+     - Documentation (recommended)
+
+  3. Choose Database or Demo mode
+
+  4. If Database mode: Enter PostgreSQL connection details
+
+  5. Installation completes
+
+  6. Launch application
+
+═══════════════════════════════════════════════════════════════
+
+AFTER INSTALLATION:
+
+First-time setup:
+  1. Launch the application from desktop shortcut
+  2. Configure company details in Settings
+  3. Add farmers in Master Data screen
+  4. Add rice mills in Master Data screen
+  5. Add trucks in Master Data screen
+  6. Add harvest areas in Master Data screen
+  7. Start creating purchase bills!
+
+═══════════════════════════════════════════════════════════════
+
+UNINSTALLATION:
+
+To remove the software:
+  → Start Menu → Rice Billing System → Uninstall
+  OR
+  → Windows Settings → Apps → Rice Billing System → Uninstall
+
+Note: Your database will NOT be deleted during uninstallation.
+
+═══════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING:
+
+If installation fails:
+  ✓ Ensure you have administrator privileges
+  ✓ Disable antivirus temporarily
+  ✓ Check disk space available
+  ✓ Close all other applications
+
+If application won't start:
+  ✓ Check PostgreSQL service is running (Database mode)
+  ✓ Verify .env file configuration
+  ✓ Check Windows Event Viewer for errors
+  ✓ Try Demo Mode first
+
+For printer issues:
+  ✓ Ensure printer is powered on
+  ✓ Check USB connection
+  ✓ Verify driver is installed
+  ✓ Set printer as default in Windows
+
+═══════════════════════════════════════════════════════════════
+
+SUPPORT:
+
+For technical support:
+  → Check README.txt in installation folder
+  → Review documentation included with software
+  → Contact: AYOP BIN ARSHAD, Sekinchan, Selangor
+
+═══════════════════════════════════════════════════════════════
+
+READY TO INSTALL
+
+Click "Next" to continue with the installation.
+
+═══════════════════════════════════════════════════════════════
