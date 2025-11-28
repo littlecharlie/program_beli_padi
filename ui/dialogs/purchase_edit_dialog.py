@@ -135,7 +135,7 @@ class PurchaseEditDialog(QDialog):
         # Title
         title = QLabel(f"Edit Purchase Bill: {self.bill.bill_number}")
         title.setStyleSheet("font-size: 16px; font-weight: bold; padding: 10px;")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
 
         # Bill Information Group (Read-only)

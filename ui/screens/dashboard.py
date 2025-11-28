@@ -320,7 +320,7 @@ class DashboardScreen(QWidget):
 
         value_label = QLabel(value)
         value_label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color};")
-        value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        value_label.setAlignment(Qt.AlignCenter)
 
         # Store reference if label_key provided
         if label_key:

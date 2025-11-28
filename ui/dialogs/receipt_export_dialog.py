@@ -42,7 +42,7 @@ class ReceiptExportDialog(QDialog):
         title_text = "Purchase Bill Receipt" if self.receipt_type == 'purchase' else "Delivery Invoice Receipt"
         title = QLabel(f"{title_text}: {self.receipt_number}")
         title.setStyleSheet("font-size: 14px; font-weight: bold; padding: 10px;")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
 
         # Instructions

@@ -205,13 +205,13 @@ def example_export_delivery_report():
         db.close()
 
 
-# Example 8: Integration with PyQt6 UI - Export button handler
+# Example 8: Integration with PyQt5 UI - Export button handler
 def example_ui_integration_export_button(bill_id: int):
     """
-    Example of integrating PDF export with PyQt6 button click
+    Example of integrating PDF export with PyQt5 button click
     This would be called from your UI button click handler
     """
-    from PyQt6.QtWidgets import QMessageBox, QFileDialog
+    from PyQt5.QtWidgets import QMessageBox, QFileDialog
 
     db = get_db_session()
     try:

@@ -1,10 +1,13 @@
+# Python 3.8+ compatible (Windows 7 compatible)
+# Target: Python 3.8.10 (last version supporting Windows 7)
+
 # Database
 psycopg2-binary==2.9.9
 sqlalchemy==2.0.23
 alembic==1.13.0
 
 # UI Framework
-# Changed from PyQt6 to PyQt5 for Python 3.8 and Windows 7 compatibility
+# PyQt5 for Python 3.8 and Windows 7 compatibility
 PyQt5==5.15.10
 
 # Printing
