@@ -146,7 +146,7 @@ class TruckSelectorWidget(QWidget):
         """Open dialog to add new truck"""
         from ui.dialogs.truck_dialog import TruckDialog
         dialog = TruckDialog(self.db, parent=self)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
+        if dialog.exec() == QDialog.Accepted:
             # New truck created, refresh
             self.load_trucks()
 

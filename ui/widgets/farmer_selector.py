@@ -81,12 +81,12 @@ class FarmerSelectorWidget(QWidget):
         for farmer in farmers:
             item_text = f"{farmer.name} (IC: {farmer.ic_number})"
             item = QListWidgetItem(item_text)
-            item.setData(Qt.ItemDataRole.UserRole, farmer.id)
+            item.setData(Qt.UserRole, farmer.id)
             self.results_list.addItem(item)
 
     def on_farmer_selected(self, item):
         """Handle farmer selection from list"""
-        farmer_id = item.data(Qt.ItemDataRole.UserRole)
+        farmer_id = item.data(Qt.UserRole)
         farmer = FarmerService.get_by_id(self.db, farmer_id)
 
         if farmer:
@@ -103,7 +103,7 @@ class FarmerSelectorWidget(QWidget):
         """Open dialog to add new farmer"""
         from ui.dialogs.farmer_dialog import FarmerDialog
         dialog = FarmerDialog(self.db, parent=self)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
+        if dialog.exec() == QDialog.Accepted:
             # New farmer created, refresh
             self.search_farmers()
 

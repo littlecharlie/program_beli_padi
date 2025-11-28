@@ -311,7 +311,7 @@ class DeliveryEntryScreen(QWidget):
 
             # Bill number
             bill_item = QTableWidgetItem(bill.bill_number)
-            bill_item.setData(Qt.ItemDataRole.UserRole, bill.id)
+            bill_item.setData(Qt.UserRole, bill.id)
             self.bills_table.setItem(row, 1, bill_item)
 
             # Date
@@ -378,7 +378,7 @@ class DeliveryEntryScreen(QWidget):
             checkbox = self.bills_table.cellWidget(row, 0)
             if checkbox and checkbox.isChecked():
                 bill_item = self.bills_table.item(row, 1)
-                bill_id = bill_item.data(Qt.ItemDataRole.UserRole)
+                bill_id = bill_item.data(Qt.UserRole)
                 selected_ids.append(bill_id)
         return selected_ids
 

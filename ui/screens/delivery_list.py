@@ -252,7 +252,7 @@ class DeliveryListScreen(QWidget):
 
             # Invoice number
             item = QTableWidgetItem(invoice.invoice_number)
-            item.setData(Qt.ItemDataRole.UserRole, invoice.id)
+            item.setData(Qt.UserRole, invoice.id)
             self.invoices_table.setItem(row, 0, item)
 
             # Date
@@ -317,7 +317,7 @@ class DeliveryListScreen(QWidget):
             if not selected_rows:
                 QMessageBox.warning(self, "Warning", "Please select an invoice")
                 return
-            invoice_id = self.invoices_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+            invoice_id = self.invoices_table.item(selected_rows[0].row(), 0).data(Qt.UserRole)
 
         invoice = DeliveryService.get_by_id(self.db, invoice_id)
         if invoice:
@@ -350,7 +350,7 @@ class DeliveryListScreen(QWidget):
             QMessageBox.warning(self, "Warning", "Please select an invoice")
             return
 
-        invoice_id = self.invoices_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+        invoice_id = self.invoices_table.item(selected_rows[0].row(), 0).data(Qt.UserRole)
         invoice = DeliveryService.get_by_id(self.db, invoice_id)
 
         if not invoice:
@@ -364,7 +364,7 @@ class DeliveryListScreen(QWidget):
             parent=self
         )
 
-        if dialog.exec() == dialog.DialogCode.Accepted:
+        if dialog.exec() == QDialog.Accepted:
             try:
                 action = dialog.get_action()
                 pdf_path = dialog.get_pdf_path()
@@ -480,7 +480,7 @@ class DeliveryListScreen(QWidget):
             QMessageBox.warning(self, "Warning", "Please select an invoice")
             return
 
-        invoice_id = self.invoices_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+        invoice_id = self.invoices_table.item(selected_rows[0].row(), 0).data(Qt.UserRole)
         invoice = DeliveryService.get_by_id(self.db, invoice_id)
 
         if not invoice:

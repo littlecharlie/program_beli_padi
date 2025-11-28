@@ -1,0 +1,37 @@
+# Python 3.7.6+ compatible (Windows 7 compatible)
+# Target: Python 3.7.6 (for Windows 7 systems)
+# Updated: 2025-11-28
+
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==1.4.53  # DOWNGRADE from 2.0.23 (SQLAlchemy 2.0+ requires Python 3.8+)
+alembic==1.12.1  # DOWNGRADE from 1.13.0 (last version supporting Python 3.7)
+
+# UI Framework
+# PyQt5 for Python 3.7 and Windows 7 compatibility
+PyQt5==5.15.10
+
+# Printing
+python-escpos==3.0
+pywin32==306; sys_platform == 'win32'
+pillow==9.5.0  # DOWNGRADE from 10.1.0 (Pillow 10+ requires Python 3.8+)
+
+# PDF Generation (for reports)
+reportlab==3.6.13  # DOWNGRADE from 4.0.7 (ReportLab 4.0+ requires Python 3.8+)
+
+# API (for future mobile integration - optional)
+# NOTE: FastAPI/Pydantic only used in examples/, not core desktop application
+fastapi==0.100.1  # DOWNGRADE from 0.104.1 (compatible with Pydantic 1.x and Python 3.7)
+uvicorn==0.24.0
+pydantic==1.10.13  # DOWNGRADE from 2.5.0 (Pydantic V2 requires Python 3.8+)
+
+# Utilities
+python-dotenv==0.21.1  # DOWNGRADE from 1.0.0 (v1.0.0 dropped Python 3.7 support)
+python-dateutil==2.8.2
+
+# Testing
+pytest==7.4.3  # Last version supporting Python 3.7
+pytest-cov==4.1.0  # Last version supporting Python 3.7
+
+# Logging
+loguru==0.7.2

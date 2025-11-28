@@ -226,7 +226,7 @@ class PurchaseListScreenWithExport(QWidget, TableContextMenuMixin):
         for row, bill in enumerate(bills):
             # Bill number
             item = QTableWidgetItem(bill.bill_number)
-            item.setData(Qt.ItemDataRole.UserRole, bill.id)
+            item.setData(Qt.UserRole, bill.id)
             self.bills_table.setItem(row, 0, item)
 
             # Date
@@ -394,7 +394,7 @@ class PurchaseListScreenWithExport(QWidget, TableContextMenuMixin):
         for row in selected_rows:
             item = self.bills_table.item(row.row(), 0)
             if item:
-                bill_id = item.data(Qt.ItemDataRole.UserRole)
+                bill_id = item.data(Qt.UserRole)
                 if bill_id:
                     bill_ids.append(bill_id)
 
@@ -535,7 +535,7 @@ class PurchaseListScreenWithExport(QWidget, TableContextMenuMixin):
             return None
 
         item = self.bills_table.item(selected_rows[0].row(), 0)
-        return item.data(Qt.ItemDataRole.UserRole) if item else None
+        return item.data(Qt.UserRole) if item else None
 
     def refresh(self):
         """Refresh the bills list"""

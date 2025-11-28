@@ -219,7 +219,7 @@ class DeliveryListScreenWithExport(QWidget, TableContextMenuMixin):
         for row, invoice in enumerate(invoices):
             # Invoice number
             item = QTableWidgetItem(invoice.invoice_number)
-            item.setData(Qt.ItemDataRole.UserRole, invoice.id)
+            item.setData(Qt.UserRole, invoice.id)
             self.invoices_table.setItem(row, 0, item)
 
             # Date
@@ -374,7 +374,7 @@ class DeliveryListScreenWithExport(QWidget, TableContextMenuMixin):
         for row in selected_rows:
             item = self.invoices_table.item(row.row(), 0)
             if item:
-                invoice_id = item.data(Qt.ItemDataRole.UserRole)
+                invoice_id = item.data(Qt.UserRole)
                 if invoice_id:
                     invoice_ids.append(invoice_id)
 
@@ -479,7 +479,7 @@ class DeliveryListScreenWithExport(QWidget, TableContextMenuMixin):
             return None
 
         item = self.invoices_table.item(selected_rows[0].row(), 0)
-        return item.data(Qt.ItemDataRole.UserRole) if item else None
+        return item.data(Qt.UserRole) if item else None
 
     def refresh(self):
         """Refresh the invoices list"""

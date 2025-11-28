@@ -184,7 +184,7 @@ class FarmerManagementScreen(QWidget):
     def add_farmer(self):
         """Add new farmer"""
         dialog = FarmerDialog(self.db, parent=self)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
+        if dialog.exec() == QDialog.Accepted:
             self.load_farmers()
 
     def edit_farmer(self, farmer_id: int):
@@ -192,7 +192,7 @@ class FarmerManagementScreen(QWidget):
         farmer = FarmerService.get_by_id(self.db, farmer_id)
         if farmer:
             dialog = FarmerDialog(self.db, farmer, parent=self)
-            if dialog.exec() == QDialog.DialogCode.Accepted:
+            if dialog.exec() == QDialog.Accepted:
                 self.load_farmers()
 
     def delete_farmer(self, farmer_id: int):

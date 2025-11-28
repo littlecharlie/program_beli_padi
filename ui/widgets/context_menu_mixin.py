@@ -82,7 +82,7 @@ class TableContextMenuMixin:
         for row in selected_rows:
             item = table.item(row.row(), 0)
             if item:
-                item_id = item.data(Qt.ItemDataRole.UserRole)
+                item_id = item.data(Qt.UserRole)
                 if item_id:
                     selected_ids.append(item_id)
 

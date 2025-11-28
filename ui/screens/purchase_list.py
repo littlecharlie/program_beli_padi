@@ -244,7 +244,7 @@ class PurchaseListScreen(QWidget):
 
             # Bill number
             item = QTableWidgetItem(bill.bill_number)
-            item.setData(Qt.ItemDataRole.UserRole, bill.id)
+            item.setData(Qt.UserRole, bill.id)
             self.bills_table.setItem(row, 0, item)
 
             # Date
@@ -335,7 +335,7 @@ class PurchaseListScreen(QWidget):
     #         QMessageBox.warning(self, "Warning", "Please select a bill to edit")
     #         return
     #
-    #     bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+    #     bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.UserRole)
     #     bill = PurchaseService.get_by_id(self.db, bill_id)
     #
     #     if not bill:
@@ -348,7 +348,7 @@ class PurchaseListScreen(QWidget):
     #
     #     # Open edit dialog
     #     dialog = PurchaseEditDialog(bill_id=bill_id, parent=self)
-    #     if dialog.exec() == dialog.DialogCode.Accepted:
+    #     if dialog.exec() == QDialog.Accepted:
     #         # Refresh the table to show updated data
     #         self.load_bills()
     #         QMessageBox.information(
@@ -363,7 +363,7 @@ class PurchaseListScreen(QWidget):
             QMessageBox.warning(self, "Warning", "Please select a bill to print")
             return
 
-        bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+        bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.UserRole)
         bill = PurchaseService.get_by_id(self.db, bill_id)
 
         if not bill:
@@ -377,7 +377,7 @@ class PurchaseListScreen(QWidget):
             parent=self
         )
 
-        if dialog.exec() == dialog.DialogCode.Accepted:
+        if dialog.exec() == QDialog.Accepted:
             try:
                 action = dialog.get_action()
                 pdf_path = dialog.get_pdf_path()
@@ -493,7 +493,7 @@ class PurchaseListScreen(QWidget):
             QMessageBox.warning(self, "Warning", "Please select a bill to delete")
             return
 
-        bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+        bill_id = self.bills_table.item(selected_rows[0].row(), 0).data(Qt.UserRole)
         bill = PurchaseService.get_by_id(self.db, bill_id)
 
         if not bill:
