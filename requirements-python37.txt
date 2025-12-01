@@ -12,7 +12,7 @@ alembic==1.12.1  # DOWNGRADE from 1.13.0 (last version supporting Python 3.7)
 PyQt5==5.15.10
 
 # Printing
-python-escpos==3.0
+python-escpos==2.2.0  # DOWNGRADE from 3.0 (python-escpos 3.0+ requires Python 3.8+)
 pywin32==306; sys_platform == 'win32'
 pillow==9.5.0  # DOWNGRADE from 10.1.0 (Pillow 10+ requires Python 3.8+)
 
@@ -34,4 +34,4 @@ pytest==7.4.3  # Last version supporting Python 3.7
 pytest-cov==4.1.0  # Last version supporting Python 3.7
 
 # Logging
-loguru==0.7.2
+loguru==0.6.0  # DOWNGRADE from 0.7.2 (loguru 0.7+ may have issues with Python 3.7)
