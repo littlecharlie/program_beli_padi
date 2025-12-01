@@ -23,8 +23,9 @@ pip install setuptools==59.6.0 wheel
 pip install -r requirements-python37.txt
 ```
 
-If you see errors about missing Visual C++, download and install:
-**Microsoft Visual C++ 14.0 Build Tools** from Microsoft's website.
+**NEW:** The requirements file now includes an explicit PyQt5-sip version to avoid build errors on Windows 7. No Visual C++ Build Tools required!
+
+If you still encounter PyQt5 installation issues, see **[PYQT5_WINDOWS7_INSTALL_GUIDE.md](PYQT5_WINDOWS7_INSTALL_GUIDE.md)** for detailed troubleshooting.
 
 ### 3. Configure Environment
 
@@ -73,6 +74,8 @@ python main.py
 ### Problem: "No module named 'PyQt5'"
 **Solution:**
 ```bash
+# PyQt5-sip must be installed first
+pip install PyQt5-sip==12.13.0
 pip install PyQt5==5.15.10
 ```
 
@@ -84,10 +87,13 @@ python --version
 ```
 
 ### Problem: "error: Microsoft Visual C++ 14.0 is required"
-**Solution:** Install Microsoft C++ Build Tools or use pre-built wheels:
-```bash
-pip install --only-binary :all: -r requirements-python37.txt
-```
+**Solution:** This error should NOT occur with the updated requirements-python37.txt file because PyQt5-sip==12.13.0 has pre-built wheels.
+
+If you still see this error:
+1. Clear pip cache: `pip cache purge`
+2. Reinstall: `pip uninstall PyQt5 PyQt5-sip -y`
+3. Install explicitly: `pip install PyQt5-sip==12.13.0 PyQt5==5.15.10`
+4. See **[PYQT5_WINDOWS7_INSTALL_GUIDE.md](PYQT5_WINDOWS7_INSTALL_GUIDE.md)** for comprehensive solutions
 
 ### Problem: Database connection errors
 **Solution:** Check PostgreSQL is running and credentials in `.env` are correct:
@@ -133,12 +139,23 @@ Upgrade pip's dependencies:
 python -m pip install --upgrade pip certifi urllib3
 ```
 
+### Issue: PyQt5 Build Errors
+See the comprehensive guide: **[PYQT5_WINDOWS7_INSTALL_GUIDE.md](PYQT5_WINDOWS7_INSTALL_GUIDE.md)**
+
+This guide covers:
+- Why PyQt5-sip must come before PyQt5
+- Alternative installation methods
+- Version compatibility matrix
+- Testing PyQt5 installation
+- All known Windows 7 PyQt5 issues and solutions
+
 ---
 
 ## Package Versions (All Python 3.7 Compatible)
 
 | Package | Version | Notes |
 |---------|---------|-------|
+| PyQt5-sip | 12.13.0 | **NEW:** Explicit version with pre-built wheels |
 | PyQt5 | 5.15.10 | Last version for Windows 7 |
 | SQLAlchemy | 1.4.53 | Transition version (1.x/2.0 compatible) |
 | alembic | 1.12.1 | Database migrations |
@@ -160,10 +177,18 @@ python -m pip install --upgrade pip certifi urllib3
 
 ## Getting Help
 
-- Check `PYTHON37_FIX_COMPLETE.md` for detailed changes
-- Check `PYTHON37_CHANGES_SUMMARY.txt` for quick reference
+- **PyQt5 Issues:** Check [PYQT5_WINDOWS7_INSTALL_GUIDE.md](PYQT5_WINDOWS7_INSTALL_GUIDE.md)
+- **General Issues:** Check `PYTHON37_FIX_COMPLETE.md` for detailed changes
+- **Quick Reference:** Check `PYTHON37_CHANGES_SUMMARY.txt`
 - Review error messages carefully - they often indicate missing dependencies
 
 ---
 
-**Installation should now work without the alembic version error!** ✅
+## What's Fixed in This Version
+
+- **PyQt5-sip explicit version:** No more build errors on Windows 7
+- **All packages compatible with Python 3.7.6**
+- **No Visual C++ Build Tools required**
+- **Pre-built wheels for all dependencies**
+
+**Installation should now work smoothly on Windows 7 with Python 3.7.6!**

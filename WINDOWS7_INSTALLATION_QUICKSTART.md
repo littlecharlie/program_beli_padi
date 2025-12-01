@@ -13,7 +13,7 @@ pip install -r requirements-python37.txt
 ```
 
 This will install:
-- PyQt5 (desktop UI)
+- PyQt5 (desktop UI) **with pre-built wheels - no compiler needed!**
 - PostgreSQL database drivers
 - Printing support
 - PDF generation
@@ -49,6 +49,15 @@ If you still see this error:
 1. Make sure you're using the latest `requirements-python37.txt`
 2. FastAPI/uvicorn should be commented out (lines 28-30)
 
+### Error: "Microsoft Visual C++ 14.0 is required" (PyQt5-sip)
+**Fixed!** The requirements file now includes PyQt5-sip==12.13.0 with pre-built wheels.
+
+If you still see this error:
+1. Clear pip cache: `pip cache purge`
+2. Uninstall: `pip uninstall PyQt5 PyQt5-sip -y`
+3. Reinstall: `pip install PyQt5-sip==12.13.0 PyQt5==5.15.10`
+4. See **[PYQT5_WINDOWS7_INSTALL_GUIDE.md](PYQT5_WINDOWS7_INSTALL_GUIDE.md)** for comprehensive troubleshooting
+
 ### Want to Run API Examples?
 Only needed for future mobile development.
 
@@ -64,6 +73,7 @@ Only needed for future mobile development.
 ## What's Installed
 
 ### Core Desktop App (Always Installed)
+- **PyQt5-sip 12.13.0** - PyQt5 bindings (pre-built wheel)
 - **PyQt5 5.15.10** - Desktop UI framework
 - **psycopg2-binary 2.9.9** - PostgreSQL database
 - **SQLAlchemy 1.4.53** - Database ORM
@@ -80,7 +90,8 @@ Only needed for future mobile development.
 
 - **Requirements:** `/home/appfelix/claude/program_beli_padi/requirements-python37.txt`
 - **Main App:** `/home/appfelix/claude/program_beli_padi/main.py`
-- **Fix Documentation:** `/home/appfelix/claude/program_beli_padi/FASTAPI_UVICORN_FIX.md`
+- **PyQt5 Fix Guide:** `/home/appfelix/claude/program_beli_padi/PYQT5_WINDOWS7_INSTALL_GUIDE.md`
+- **FastAPI Fix:** `/home/appfelix/claude/program_beli_padi/FASTAPI_UVICORN_FIX.md`
 
 ## Next Steps
 
@@ -88,3 +99,10 @@ After installation:
 1. Setup PostgreSQL database (or use DEMO_MODE=true)
 2. Run `python main.py`
 3. Start creating purchase bills and delivery invoices!
+
+## What's New in This Version
+
+- **PyQt5-sip 12.13.0 explicitly specified** - No more build errors
+- **No Visual C++ Build Tools required** - All packages use pre-built wheels
+- **Comprehensive PyQt5 troubleshooting guide** - See PYQT5_WINDOWS7_INSTALL_GUIDE.md
+- **All packages tested on Python 3.7.6 + Windows 7**
