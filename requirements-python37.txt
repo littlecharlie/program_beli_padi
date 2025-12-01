@@ -1,6 +1,6 @@
 # Python 3.7.6+ compatible (Windows 7 compatible)
 # Target: Python 3.7.6 (for Windows 7 systems)
-# Updated: 2025-11-28
+# Updated: 2025-12-01
 
 # Database
 psycopg2-binary==2.9.9
@@ -19,11 +19,15 @@ pillow==9.5.0  # DOWNGRADE from 10.1.0 (Pillow 10+ requires Python 3.8+)
 # PDF Generation (for reports)
 reportlab==3.6.13  # DOWNGRADE from 4.0.7 (ReportLab 4.0+ requires Python 3.8+)
 
-# API (for future mobile integration - optional)
-# NOTE: FastAPI/Pydantic only used in examples/, not core desktop application
-fastapi==0.100.1  # DOWNGRADE from 0.104.1 (compatible with Pydantic 1.x and Python 3.7)
-uvicorn==0.24.0
-pydantic==1.10.13  # DOWNGRADE from 2.5.0 (Pydantic V2 requires Python 3.8+)
+# API (for future mobile integration - OPTIONAL, not required for desktop app)
+# NOTE: These are only used in examples/pdf_export_examples.py for API endpoint examples
+# The core desktop application (main.py) does NOT import or require these packages
+# You can safely skip installing these if you only need the desktop application
+#
+# If you want to run the API examples or build the mobile backend in the future:
+# fastapi==0.100.1  # DOWNGRADE from 0.104.1 (compatible with Pydantic 1.x and Python 3.7)
+# uvicorn==0.23.2  # DOWNGRADE from 0.24.0 (uvicorn 0.24.0+ dropped Python 3.7 support)
+# pydantic==1.10.13  # DOWNGRADE from 2.5.0 (Pydantic V2 requires Python 3.8+)
 
 # Utilities
 python-dotenv==0.21.1  # DOWNGRADE from 1.0.0 (v1.0.0 dropped Python 3.7 support)
