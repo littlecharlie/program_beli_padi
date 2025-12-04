@@ -101,7 +101,7 @@ class FarmerSelectorWidget(QWidget):
 
     def add_new_farmer(self):
         """Open dialog to add new farmer"""
-        from ui.dialogs.farmer_dialog import FarmerDialog
+        from ui.screens.master_data import FarmerDialog
         dialog = FarmerDialog(self.db, parent=self)
         if dialog.exec() == QDialog.Accepted:
             # New farmer created, refresh

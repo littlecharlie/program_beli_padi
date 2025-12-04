@@ -10,10 +10,12 @@ alembic==1.12.1  # DOWNGRADE from 1.13.0 (last version supporting Python 3.7)
 # UI Framework
 # PyQt5 for Python 3.7 and Windows 7 compatibility
 # IMPORTANT: PyQt5-sip must be installed BEFORE PyQt5 to avoid build errors
-# PyQt5-sip 12.13.0 has pre-built wheels for Python 3.7 on Windows (cp37-win_amd64)
-# This prevents the "Microsoft Visual C++ 14.0 required" error on Windows 7
-PyQt5-sip==12.13.0
-PyQt5==5.15.10
+# PyQt5-sip 12.11.0 has pre-built wheels for Python 3.7 on Windows (cp37-cp37m-win_amd64)
+# Version 12.13.0+ does NOT have cp37 wheels - will fail with "Microsoft Visual C++ 14.0 required"
+# PyQt5 5.15.6 requires PyQt5-sip >=12.11, <13 (compatible with 12.11.0)
+# PyQt5 5.15.10 requires PyQt5-sip >=12.13 (NOT compatible with Python 3.7)
+PyQt5-sip==12.11.0
+PyQt5==5.15.6
 
 # Printing
 python-escpos==2.2.0  # DOWNGRADE from 3.0 (python-escpos 3.0+ requires Python 3.8+)
