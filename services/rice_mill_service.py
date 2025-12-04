@@ -78,6 +78,16 @@ class RiceMillService:
         return False
 
     @staticmethod
+    def reactivate(db: Session, mill_id: int) -> bool:
+        """Reactivate rice mill (set is_active to True)"""
+        mill = RiceMillService.get_by_id(db, mill_id)
+        if mill:
+            mill.is_active = True
+            db.commit()
+            return True
+        return False
+
+    @staticmethod
     def count(db: Session, active_only: bool = True) -> int:
         """Count rice mills"""
         query = db.query(RiceMill)

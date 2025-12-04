@@ -76,6 +76,16 @@ class TruckService:
         return False
 
     @staticmethod
+    def reactivate(db: Session, truck_id: int) -> bool:
+        """Reactivate truck (set is_active to True)"""
+        truck = TruckService.get_by_id(db, truck_id)
+        if truck:
+            truck.is_active = True
+            db.commit()
+            return True
+        return False
+
+    @staticmethod
     def count(db: Session, active_only: bool = True) -> int:
         """Count trucks"""
         query = db.query(Truck)

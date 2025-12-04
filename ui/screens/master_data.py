@@ -73,7 +73,7 @@ class FarmerManagementScreen(QWidget):
         self.table.setColumnWidth(3, 150)
         self.table.setColumnWidth(4, 80)
         self.table.setColumnWidth(5, 80)
-        self.table.setColumnWidth(6, 80)
+        self.table.setColumnWidth(6, 120)
         # Disable cell editing - users must use the Edit button
         self.table.setEditTriggers(
             QAbstractItemView.NoEditTriggers
@@ -156,22 +156,41 @@ class FarmerManagementScreen(QWidget):
             edit_btn.clicked.connect(lambda checked, f_id=farmer.id: self.edit_farmer(f_id))
             self.table.setCellWidget(row, 5, edit_btn)
 
-            # Red delete button
-            delete_btn = self._create_table_button("Delete", """
-                QPushButton {
-                    background-color: #dc3545;
-                    color: white;
-                    border: none;
-                }
-                QPushButton:hover {
-                    background-color: #c82333;
-                }
-                QPushButton:pressed {
-                    background-color: #bd2130;
-                }
-            """)
-            delete_btn.clicked.connect(lambda checked, f_id=farmer.id: self.delete_farmer(f_id))
-            self.table.setCellWidget(row, 6, delete_btn)
+            # Show Delete button for active farmers, Reactivate button for inactive farmers
+            if farmer.is_active:
+                # Red delete button
+                delete_btn = self._create_table_button("Delete", """
+                    QPushButton {
+                        background-color: #dc3545;
+                        color: white;
+                        border: none;
+                    }
+                    QPushButton:hover {
+                        background-color: #c82333;
+                    }
+                    QPushButton:pressed {
+                        background-color: #bd2130;
+                    }
+                """)
+                delete_btn.clicked.connect(lambda checked, f_id=farmer.id: self.delete_farmer(f_id))
+                self.table.setCellWidget(row, 6, delete_btn)
+            else:
+                # Green reactivate button for inactive farmers
+                reactivate_btn = self._create_table_button("Reactivate", """
+                    QPushButton {
+                        background-color: #28a745;
+                        color: white;
+                        border: none;
+                    }
+                    QPushButton:hover {
+                        background-color: #218838;
+                    }
+                    QPushButton:pressed {
+                        background-color: #1e7e34;
+                    }
+                """)
+                reactivate_btn.clicked.connect(lambda checked, f_id=farmer.id: self.reactivate_farmer(f_id))
+                self.table.setCellWidget(row, 6, reactivate_btn)
 
     def search(self):
         """Search farmers"""
@@ -217,6 +236,25 @@ class FarmerManagementScreen(QWidget):
                 self.load_farmers()
             else:
                 QMessageBox.warning(self, "Error", "Failed to delete farmer")
+
+    def reactivate_farmer(self, farmer_id: int):
+        """Reactivate farmer"""
+        farmer = FarmerService.get_by_id(self.db, farmer_id)
+        if not farmer:
+            return
+
+        reply = QMessageBox.question(
+            self, "Confirm Reactivate",
+            f"Reactivate farmer {farmer.name}?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            if FarmerService.reactivate(self.db, farmer_id):
+                QMessageBox.information(self, "Success", "Farmer reactivated")
+                self.load_farmers()
+            else:
+                QMessageBox.warning(self, "Error", "Failed to reactivate farmer")
 
 
 class FarmerDialog(QDialog):
@@ -371,7 +409,7 @@ class RiceMillManagementScreen(QWidget):
         self.table.setColumnWidth(2, 120)
         self.table.setColumnWidth(3, 80)
         self.table.setColumnWidth(4, 80)
-        self.table.setColumnWidth(5, 80)
+        self.table.setColumnWidth(5, 120)
         # Disable cell editing - users must use the Edit button
         self.table.setEditTriggers(
             QAbstractItemView.NoEditTriggers
@@ -453,22 +491,41 @@ class RiceMillManagementScreen(QWidget):
             edit_btn.clicked.connect(lambda checked, m_id=mill.id: self.edit_mill(m_id))
             self.table.setCellWidget(row, 4, edit_btn)
 
-            # Red delete button
-            delete_btn = self._create_table_button("Delete", """
-                QPushButton {
-                    background-color: #dc3545;
-                    color: white;
-                    border: none;
-                }
-                QPushButton:hover {
-                    background-color: #c82333;
-                }
-                QPushButton:pressed {
-                    background-color: #bd2130;
-                }
-            """)
-            delete_btn.clicked.connect(lambda checked, m_id=mill.id: self.delete_mill(m_id))
-            self.table.setCellWidget(row, 5, delete_btn)
+            # Show Delete button for active mills, Reactivate button for inactive mills
+            if mill.is_active:
+                # Red delete button
+                delete_btn = self._create_table_button("Delete", """
+                    QPushButton {
+                        background-color: #dc3545;
+                        color: white;
+                        border: none;
+                    }
+                    QPushButton:hover {
+                        background-color: #c82333;
+                    }
+                    QPushButton:pressed {
+                        background-color: #bd2130;
+                    }
+                """)
+                delete_btn.clicked.connect(lambda checked, m_id=mill.id: self.delete_mill(m_id))
+                self.table.setCellWidget(row, 5, delete_btn)
+            else:
+                # Green reactivate button for inactive mills
+                reactivate_btn = self._create_table_button("Reactivate", """
+                    QPushButton {
+                        background-color: #28a745;
+                        color: white;
+                        border: none;
+                    }
+                    QPushButton:hover {
+                        background-color: #218838;
+                    }
+                    QPushButton:pressed {
+                        background-color: #1e7e34;
+                    }
+                """)
+                reactivate_btn.clicked.connect(lambda checked, m_id=mill.id: self.reactivate_mill(m_id))
+                self.table.setCellWidget(row, 5, reactivate_btn)
 
     def search(self):
         """Search mills"""
@@ -505,6 +562,22 @@ class RiceMillManagementScreen(QWidget):
                     self.load_mills()
                 else:
                     QMessageBox.warning(self, "Error", "Failed to delete mill")
+
+    def reactivate_mill(self, mill_id: int):
+        """Reactivate mill"""
+        mill = RiceMillService.get_by_id(self.db, mill_id)
+        if mill:
+            reply = QMessageBox.question(
+                self, "Confirm Reactivate",
+                f"Reactivate {mill.mill_name}?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                if RiceMillService.reactivate(self.db, mill_id):
+                    QMessageBox.information(self, "Success", "Mill reactivated")
+                    self.load_mills()
+                else:
+                    QMessageBox.warning(self, "Error", "Failed to reactivate mill")
 
 
 class TruckManagementScreen(QWidget):
@@ -558,7 +631,7 @@ class TruckManagementScreen(QWidget):
         self.table.setColumnWidth(1, 120)
         self.table.setColumnWidth(2, 80)
         self.table.setColumnWidth(3, 80)
-        self.table.setColumnWidth(4, 80)
+        self.table.setColumnWidth(4, 120)
         # Disable cell editing - users must use the Edit button
         self.table.setEditTriggers(
             QAbstractItemView.NoEditTriggers
@@ -641,22 +714,41 @@ class TruckManagementScreen(QWidget):
             edit_btn.clicked.connect(lambda checked, t_id=truck.id: self.edit_truck(t_id))
             self.table.setCellWidget(row, 3, edit_btn)
 
-            # Red delete button
-            delete_btn = self._create_table_button("Delete", """
-                QPushButton {
-                    background-color: #dc3545;
-                    color: white;
-                    border: none;
-                }
-                QPushButton:hover {
-                    background-color: #c82333;
-                }
-                QPushButton:pressed {
-                    background-color: #bd2130;
-                }
-            """)
-            delete_btn.clicked.connect(lambda checked, t_id=truck.id: self.delete_truck(t_id))
-            self.table.setCellWidget(row, 4, delete_btn)
+            # Show Delete button for active trucks, Reactivate button for inactive trucks
+            if truck.is_active:
+                # Red delete button
+                delete_btn = self._create_table_button("Delete", """
+                    QPushButton {
+                        background-color: #dc3545;
+                        color: white;
+                        border: none;
+                    }
+                    QPushButton:hover {
+                        background-color: #c82333;
+                    }
+                    QPushButton:pressed {
+                        background-color: #bd2130;
+                    }
+                """)
+                delete_btn.clicked.connect(lambda checked, t_id=truck.id: self.delete_truck(t_id))
+                self.table.setCellWidget(row, 4, delete_btn)
+            else:
+                # Green reactivate button for inactive trucks
+                reactivate_btn = self._create_table_button("Reactivate", """
+                    QPushButton {
+                        background-color: #28a745;
+                        color: white;
+                        border: none;
+                    }
+                    QPushButton:hover {
+                        background-color: #218838;
+                    }
+                    QPushButton:pressed {
+                        background-color: #1e7e34;
+                    }
+                """)
+                reactivate_btn.clicked.connect(lambda checked, t_id=truck.id: self.reactivate_truck(t_id))
+                self.table.setCellWidget(row, 4, reactivate_btn)
 
     def search(self):
         """Search trucks"""
@@ -693,3 +785,19 @@ class TruckManagementScreen(QWidget):
                     self.load_trucks()
                 else:
                     QMessageBox.warning(self, "Error", "Failed to delete truck")
+
+    def reactivate_truck(self, truck_id: int):
+        """Reactivate truck"""
+        truck = TruckService.get_by_id(self.db, truck_id)
+        if truck:
+            reply = QMessageBox.question(
+                self, "Confirm Reactivate",
+                f"Reactivate truck {truck.truck_number}?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                if TruckService.reactivate(self.db, truck_id):
+                    QMessageBox.information(self, "Success", "Truck reactivated")
+                    self.load_trucks()
+                else:
+                    QMessageBox.warning(self, "Error", "Failed to reactivate truck")

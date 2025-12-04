@@ -83,6 +83,16 @@ class FarmerService:
         return False
 
     @staticmethod
+    def reactivate(db: Session, farmer_id: int) -> bool:
+        """Reactivate farmer (set is_active to True)"""
+        farmer = FarmerService.get_by_id(db, farmer_id)
+        if farmer:
+            farmer.is_active = True
+            db.commit()
+            return True
+        return False
+
+    @staticmethod
     def hard_delete(db: Session, farmer_id: int) -> bool:
         """Permanently delete farmer"""
         farmer = FarmerService.get_by_id(db, farmer_id)
