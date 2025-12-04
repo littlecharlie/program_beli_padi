@@ -20,6 +20,7 @@ from services.delivery_service import DeliveryService
 from services.farmer_service import FarmerService
 from services.rice_mill_service import RiceMillService
 from services.pdf_export_service import PdfExportService, PdfExportError, InvalidDateRangeError
+from services.excel_export_service import ExcelExportService, ExcelExportError
 from sqlalchemy import func
 from models.purchase_bill import PurchaseBill
 from models.delivery_invoice import DeliveryInvoice
@@ -169,11 +170,13 @@ class ReportsScreen(QWidget):
         from_datetime = datetime.combine(from_date, datetime.min.time())
         to_datetime = datetime.combine(to_date, datetime.max.time())
 
-        # Store report parameters for PDF export
+        # Store report parameters for export
         self.current_report_data = {
             'type': report_type,
             'from_date': from_date,
             'to_date': to_date,
+            'from_datetime': from_datetime,
+            'to_datetime': to_datetime,
             'filter_id': self.filter_combo.currentData()
         }
 
@@ -345,7 +348,104 @@ class ReportsScreen(QWidget):
 
     def export_excel(self):
         """Export report to Excel"""
-        QMessageBox.information(self, "Info", "Excel export not yet implemented")
+        if not self.current_report_data:
+            QMessageBox.warning(
+                self,
+                "No Report Generated",
+                "Please generate a report first before exporting to Excel."
+            )
+            return
+
+        report_type = self.current_report_data['type']
+        from_date = self.current_report_data.get('from_datetime', self.current_report_data['from_date'])
+        to_date = self.current_report_data.get('to_datetime', self.current_report_data['to_date'])
+        filter_id = self.current_report_data['filter_id']
+
+        # Convert to datetime if needed
+        if not isinstance(from_date, datetime):
+            from_date = datetime.combine(from_date, datetime.min.time())
+        if not isinstance(to_date, datetime):
+            to_date = datetime.combine(to_date, datetime.max.time())
+
+        try:
+            # Ask user where to save
+            default_filename = self._get_default_filename(report_type, from_date, to_date, extension='.xlsx')
+            default_dir = str(Path.home() / "Documents")
+
+            file_path, _ = QFileDialog.getSaveFileName(
+                self,
+                "Save Report as Excel",
+                str(Path(default_dir) / default_filename),
+                "Excel Files (*.xlsx);;All Files (*.*)"
+            )
+
+            if not file_path:
+                return  # User cancelled
+
+            # Ensure .xlsx extension
+            if not file_path.lower().endswith('.xlsx'):
+                file_path += '.xlsx'
+
+            # Generate appropriate Excel file based on report type
+            if report_type == "purchase":
+                output_path = ExcelExportService.export_purchase_bills(
+                    db=self.db,
+                    file_path=file_path,
+                    from_date=from_date,
+                    to_date=to_date,
+                    filter_id=filter_id
+                )
+            elif report_type == "delivery":
+                output_path = ExcelExportService.export_delivery_invoices(
+                    db=self.db,
+                    file_path=file_path,
+                    from_date=from_date,
+                    to_date=to_date,
+                    filter_id=filter_id
+                )
+            elif report_type == "farmer":
+                output_path = ExcelExportService.export_farmer_summary(
+                    db=self.db,
+                    file_path=file_path,
+                    from_date=from_date,
+                    to_date=to_date,
+                    filter_id=filter_id
+                )
+            elif report_type == "mill":
+                output_path = ExcelExportService.export_mill_summary(
+                    db=self.db,
+                    file_path=file_path,
+                    from_date=from_date,
+                    to_date=to_date,
+                    filter_id=filter_id
+                )
+            else:
+                raise ExcelExportError(f"Unknown report type: {report_type}")
+
+            # Show success message
+            reply = QMessageBox.question(
+                self,
+                "Export Successful",
+                f"Report exported successfully to:\n{output_path}\n\nWould you like to open the Excel file?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
+            )
+
+            if reply == QMessageBox.Yes:
+                self._open_file(output_path)
+
+        except ExcelExportError as e:
+            QMessageBox.critical(
+                self,
+                "Export Failed",
+                f"Failed to export Excel:\n{str(e)}"
+            )
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Unexpected Error",
+                f"An unexpected error occurred:\n{str(e)}"
+            )
 
     def export_pdf(self):
         """Export report to PDF"""
@@ -452,20 +552,23 @@ class ReportsScreen(QWidget):
                 f"An unexpected error occurred:\n{str(e)}"
             )
 
-    def _get_default_filename(self, report_type: str, from_date, to_date) -> str:
-        """Generate default filename for PDF export"""
-        date_str = f"{from_date.strftime('%Y%m%d')}_{to_date.strftime('%Y%m%d')}"
+    def _get_default_filename(self, report_type: str, from_date, to_date, extension: str = '.pdf') -> str:
+        """Generate default filename for export"""
+        if isinstance(from_date, datetime):
+            date_str = f"{from_date.strftime('%Y%m%d')}_{to_date.strftime('%Y%m%d')}"
+        else:
+            date_str = f"{from_date.strftime('%Y%m%d')}_{to_date.strftime('%Y%m%d')}"
 
         if report_type == "purchase":
-            return f"purchase_bills_report_{date_str}.pdf"
+            return f"purchase_bills_report_{date_str}{extension}"
         elif report_type == "delivery":
-            return f"delivery_invoices_report_{date_str}.pdf"
+            return f"delivery_invoices_report_{date_str}{extension}"
         elif report_type == "farmer":
-            return f"farmer_summary_report_{date_str}.pdf"
+            return f"farmer_summary_report_{date_str}{extension}"
         elif report_type == "mill":
-            return f"mill_summary_report_{date_str}.pdf"
+            return f"mill_summary_report_{date_str}{extension}"
         else:
-            return f"report_{date_str}.pdf"
+            return f"report_{date_str}{extension}"
 
     def _open_file(self, file_path: str):
         """Open file with default system application"""

@@ -18,6 +18,9 @@ pillow==10.1.0
 # PDF Generation (for reports)
 reportlab==4.0.7
 
+# Excel Export
+openpyxl==3.1.2
+
 # API (for future mobile integration)
 fastapi==0.104.1
 uvicorn==0.24.0
