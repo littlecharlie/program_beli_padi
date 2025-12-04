@@ -5,7 +5,7 @@ View, search, and manage purchase bills
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
-    QDateEdit, QComboBox, QSpinBox, QAbstractItemView
+    QDateEdit, QComboBox, QSpinBox, QAbstractItemView, QDialog
 )
 from PyQt5.QtCore import Qt, QDate, pyqtSignal
 from datetime import datetime, timedelta

@@ -130,6 +130,8 @@ class FarmerManagementScreen(QWidget):
 
     def load_farmers(self):
         """Load all farmers"""
+        # Expire all cached objects to ensure we fetch fresh data from database
+        self.db.expire_all()
         farmers = FarmerService.get_all(self.db, active_only=False)
         self.populate_table(farmers)
 
@@ -178,6 +180,8 @@ class FarmerManagementScreen(QWidget):
             self.load_farmers()
             return
 
+        # Expire all cached objects before searching
+        self.db.expire_all()
         farmers = FarmerService.search(self.db, search_term, active_only=False)
         self.populate_table(farmers)
 
@@ -211,6 +215,8 @@ class FarmerManagementScreen(QWidget):
             if FarmerService.delete(self.db, farmer_id):
                 QMessageBox.information(self, "Success", "Farmer deleted")
                 self.load_farmers()
+            else:
+                QMessageBox.warning(self, "Error", "Failed to delete farmer")
 
 
 class FarmerDialog(QDialog):
@@ -422,6 +428,8 @@ class RiceMillManagementScreen(QWidget):
 
     def load_mills(self):
         """Load all mills"""
+        # Expire all cached objects to ensure we fetch fresh data from database
+        self.db.expire_all()
         mills = RiceMillService.get_all(self.db, active_only=False)
         self.populate_table(mills)
 
@@ -469,6 +477,8 @@ class RiceMillManagementScreen(QWidget):
             self.load_mills()
             return
 
+        # Expire all cached objects before searching
+        self.db.expire_all()
         mills = RiceMillService.search(self.db, search_term, active_only=False)
         self.populate_table(mills)
 
@@ -493,6 +503,8 @@ class RiceMillManagementScreen(QWidget):
                 if RiceMillService.delete(self.db, mill_id):
                     QMessageBox.information(self, "Success", "Mill deleted")
                     self.load_mills()
+                else:
+                    QMessageBox.warning(self, "Error", "Failed to delete mill")
 
 
 class TruckManagementScreen(QWidget):
@@ -603,6 +615,8 @@ class TruckManagementScreen(QWidget):
 
     def load_trucks(self):
         """Load all trucks"""
+        # Expire all cached objects to ensure we fetch fresh data from database
+        self.db.expire_all()
         trucks = TruckService.get_all(self.db, active_only=False)
         self.populate_table(trucks)
 
@@ -651,6 +665,8 @@ class TruckManagementScreen(QWidget):
             self.load_trucks()
             return
 
+        # Expire all cached objects before searching
+        self.db.expire_all()
         trucks = TruckService.search(self.db, search_term, active_only=False)
         self.populate_table(trucks)
 
@@ -675,3 +691,5 @@ class TruckManagementScreen(QWidget):
                 if TruckService.delete(self.db, truck_id):
                     QMessageBox.information(self, "Success", "Truck deleted")
                     self.load_trucks()
+                else:
+                    QMessageBox.warning(self, "Error", "Failed to delete truck")
