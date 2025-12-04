@@ -5,7 +5,7 @@ View and manage delivery invoices
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
-    QDateEdit, QComboBox, QAbstractItemView
+    QDateEdit, QComboBox, QAbstractItemView, QDialog
 )
 from PyQt5.QtCore import Qt, QDate, pyqtSignal
 from datetime import datetime
